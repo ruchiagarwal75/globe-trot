@@ -1,0 +1,26 @@
+{
+  "name": "globe-trot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "ejs": "^2.5.6",
+    "express": "^4.14.1",
+    "mongoose": "^4.8.4",
+    "nodemon": "^1.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruchiagarwal75/globe-trot.git"
+  },
+  "author": "ruchi agarwal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ruchiagarwal75/globe-trot/issues"
+  },
+  "homepage": "https://github.com/ruchiagarwal75/globe-trot#readme"
+}
