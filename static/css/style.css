@@ -179,3 +179,18 @@ textarea {
   margin-top: -20px;
   text-align: right;
 }
+.checkbox {
+    height: 20px;
+    display: inline;
+    width: 17px;
+    float: left;
+    margin-top: 10px;
+}
+.checkbox-label {
+  margin-left: 10px;
+}
+.check-wrap {
+  display: block;
+  margin-right: 16px; 
+  height: 20px;
+}

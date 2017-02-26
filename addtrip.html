@@ -1,0 +1,65 @@
+<html>
+    <head>
+		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="static/css/dashboard.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+         <link rel="stylesheet" href="static/css/style.css">
+	</head>
+    <body>
+        <div class="addtrip"></div>
+        <div role="main" class="pagecontent">
+        <nav>
+            <a id="logo" href="/dashboard"><img src="http://www.freeiconspng.com/uploads/--global-globe-plane-travel-worldwide-icon--icon-search-engine-1.png" /></a>
+            <a class="nav" href="/">logout</a>
+             <a class="nav" href="/profile">profile</a>
+        </nav>
+    <div class="form">  
+          
+      <div class="tab-content">
+        <div id="signup">   
+          <h1>Let's add a trip!</h1>
+          
+          <form action="/addtrip" method="post">
+          
+          <div class="top-row">
+            <div class="field-wrap">
+              <label>
+                Origin City<span class="req">*</span>
+              </label>
+              <input type="text" required autocomplete="off" />
+            </div>
+        
+            <div class="field-wrap">
+              <label>
+                Destination City<span class="req">*</span>
+              </label>
+              <input type="text"required autocomplete="off"/>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <input type="date" placeholder="date of journey" required autocomplete="off"/>
+          </div>
+           <div class="field-wrap check-wrap"> 
+            <input style="height:20px" type="checkbox" class="checkbox" value="approxday"/>
+             <label class="checkbox-label">
+                +/- 15 days<span class="req">*</span>
+              </label>
+          </div>
+          
+          <button type="submit" class="button button-block"/>Get Started</button>
+          
+          </form>
+
+        </div>
+        
+        <div id="login">   
+    
+        </div>
+        
+      </div><!-- tab-content -->
+      
+</div> <!-- /form -->
+        </div>
+    </body>
+</html>

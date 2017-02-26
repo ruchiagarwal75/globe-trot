@@ -34,8 +34,11 @@ app.post('/login', function (req, res) {
         }
     });
 });
+app.get('/dashboard', function (req, res) {
+    res.sendFile(__dirname + '/dashboard.html');
+});
 app.get('/addtrip', function (req, res) {
-
+     res.sendFile(__dirname + '/addtrip.html');
 });
 app.listen('8000', 'localhost');
 console.log('Server started at 8000');
