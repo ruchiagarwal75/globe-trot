@@ -34,6 +34,17 @@ app.post('/login', function (req, res) {
         }
     });
 });
+app.post('/addtrip', function (req, res) {
+    var collection = dbCOnnectionObj.collection('TravelDetails');
+    collection.insertOne({StartPoint:req.body.origincity,EndPoint:req.body.destinationcity,StartDate:req.body.startdate}, function(err, item) {
+        if (item) {
+            res.sendFile(__dirname + '/mytrips.html');
+        }
+        else {
+            console.log('Bad req');
+        }
+    });
+});
 app.get('/dashboard', function (req, res) {
     res.sendFile(__dirname + '/dashboard.html');
 });
