@@ -5,19 +5,26 @@
 	</head>
     <body>
         <div class="mytrips"></div>
-        <div role="main" class="pagecontent">
+        <div role="main" class="pagecontent" style="bottom:0">
         <nav>
             <a id="logo" href="/dashboard"><img src="http://www.freeiconspng.com/uploads/--global-globe-plane-travel-worldwide-icon--icon-search-engine-1.png" /></a>
             <a class="nav" href="/">logout</a>
             <a class="nav" href="/profile">profile</a>
         </nav>
         <header>
-           <h1> Pack Up! Your Upcoming Trips:</h1>
+           <h1> Pack Up! Your Upcoming Trips:</h1> 
         </header>
         <ul class="upcomingtrips">
+          <% trips.forEach(function(item) { %>
             <li>
-                <div></div>
+                <div>
+                   <div><span> User: </span><%= item.user %> </div>
+                   <div><span> Origin City:</span> <%= item.StartPoint %></div>
+                   <div><span> Destination City:</span> <%= item.EndPoint %></div>
+                   <div><span> Start Date:</span> <%= item.StartDate %></div>
+                </div>
             </li>
+           <% }) %>
         </ul>   
         </div>
     </body>
