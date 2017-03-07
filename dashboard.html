@@ -2,56 +2,6 @@
     <head>
 		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="static/css/dashboard.css">
-        <script>
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyBhYNNihr7vympVXwY8bMf_Mvin_LAjys4",
-    authDomain: "globe-trot.firebaseapp.com",
-    databaseURL: "https://globe-trot.firebaseio.com",
-    storageBucket: "globe-trot.appspot.com",
-    messagingSenderId: "598285471211"
-  };
-  firebase.initializeApp(config);
-</script> 
- <script type="text/javascript">
-      initApp = function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-          if (user) {
-            // User is signed in.
-            var displayName = user.displayName;
-            var email = user.email;
-            var emailVerified = user.emailVerified;
-            var photoURL = user.photoURL;
-            var uid = user.uid;
-            var providerData = user.providerData;
-            user.getToken().then(function(accessToken) {
-              document.getElementById('sign-in-status').textContent = 'Signed in';
-              document.getElementById('sign-in').textContent = 'Sign out';
-              document.getElementById('account-details').textContent = JSON.stringify({
-                displayName: displayName,
-                email: email,
-                emailVerified: emailVerified,
-                photoURL: photoURL,
-                uid: uid,
-                accessToken: accessToken,
-                providerData: providerData
-              }, null, '  ');
-            });
-          } else {
-            // User is signed out.
-            document.getElementById('sign-in-status').textContent = 'Signed out';
-            document.getElementById('sign-in').textContent = 'Sign in';
-            document.getElementById('account-details').textContent = 'null';
-          }
-        }, function(error) {
-          console.log(error);
-        });
-      };
-
-      window.addEventListener('load', function() {
-        initApp()
-      });
-    </script>
 	</head>
     <body>
         <div class="page-wrapper"></div>
@@ -73,8 +23,5 @@
                 <a href="/addtrip" class="cust-button">Add a Trip</a>
             </section>
         </div>
-         <div id="sign-in-status"></div>
-    <div id="sign-in"></div>
-    <div id="account-details"></div>
     </body>
 </html>

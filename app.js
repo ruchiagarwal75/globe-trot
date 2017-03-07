@@ -2,10 +2,9 @@ var express = require('express');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
-// var firebase = require('firebase');
-// var firebaseui = require('firebaseui');
 var dbCOnnectionObj;
 // Connect to the db
+var port = process.env.PORT || 8000
 MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot", function(err, db) {
   if(!err) {
     console.log("Database connection made!");
@@ -77,9 +76,11 @@ app.get('/mytrips', function (req, res) {
         res.end(); 
     },1000);
 });
-app.listen('8001', 'localhost');
-console.log('Server started at 8001');
+// app.listen('8001', 'localhost');
+// console.log('Server started at 8001');
 
 
-
+app.listen(port, function() {
+    console.log("App is running on port " + port);
+});
 
