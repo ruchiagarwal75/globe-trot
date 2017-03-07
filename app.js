@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
+// var firebase = require('firebase');
+// var firebaseui = require('firebaseui');
 var dbCOnnectionObj;
 // Connect to the db
 MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot", function(err, db) {
@@ -58,6 +60,9 @@ app.get('/dashboard', function (req, res) {
 app.get('/addtrip', function (req, res) {
      res.sendFile(__dirname + '/addtrip.html');
 });
+app.get('/fire', function (req, res) {
+     res.render('firebaseauth');
+});
 app.get('/mytrips', function (req, res) {
     var userTrips = [];
     var collection = dbCOnnectionObj.collection('TravelDetails');
@@ -74,3 +79,7 @@ app.get('/mytrips', function (req, res) {
 });
 app.listen('8001', 'localhost');
 console.log('Server started at 8001');
+
+
+
+

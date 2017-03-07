@@ -24,15 +24,16 @@ body {
     filter: blur(1px);
 }
 .mytrips {
-   background-image: url("https://img1.10bestmedia.com/Images/Photos/325696/Becker-2014-NordicIngridSkate_54_990x660.jpg");
+   background-image: url("http://p1.pichost.me/i/23/1464712.jpg");
     background-attachment: fixed;
-    background-position: 30% 60%; 
+    background-position: 80% 60%; 
     text-align: center;
     overflow: hidden;
     width: 100%;
     height: 100%;
     margin: 0;
     position: relative;
+    
 }
 
 .page-wrapper {
@@ -132,10 +133,8 @@ section {
     left: 50%;
     transform: translate(-50%, -80%);
 }
-.mytrips header {
-    position: absolute;
-    top:20px;
-    color: white;
+.mytrips_wrapper .pagecontent {
+    top: 25px;
 }
 .upcomingtrips  {
    display: block;
@@ -152,4 +151,7 @@ section {
     background: rgba(19, 35, 47, 0.9);
     border-radius: 4px;
     box-shadow: 0 4px 10px 4px;
+}
+.mytrips_wrapper header h1 {
+    color: white
 }
