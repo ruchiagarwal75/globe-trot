@@ -2,9 +2,14 @@ var express = require('express');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
+var passport = require('passport');
+var FacebookStrategy = require('passport-facebook').Strategy;
+var configAuth = require('./config/auth');
+app.use(passport.initialize());
+app.use(passport.session());
 var dbCOnnectionObj;
 // Connect to the db
-var port = process.env.PORT || 8000
+var port = process.env.PORT || 8080
 MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot", function(err, db) {
   if(!err) {
     console.log("Database connection made!");
@@ -25,6 +30,9 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 
 app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+app.get('/login', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -53,14 +61,10 @@ app.post('/addtrip', function (req, res) {
    });
 });
 app.get('/dashboard', function (req, res) {
-    console.log(req.cookies);
     res.sendFile(__dirname + '/dashboard.html');
 });
 app.get('/addtrip', function (req, res) {
      res.sendFile(__dirname + '/addtrip.html');
-});
-app.get('/fire', function (req, res) {
-     res.render('firebaseauth');
 });
 app.get('/mytrips', function (req, res) {
     var userTrips = [];
@@ -76,6 +80,64 @@ app.get('/mytrips', function (req, res) {
         res.end(); 
     },1000);
 });
+
+app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/dashboard');
+  });
+
+  passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+ passport.use(new FacebookStrategy({
+	    clientID: configAuth.facebookAuth.clientID,
+	    clientSecret: configAuth.facebookAuth.clientSecret,
+	    callbackURL: configAuth.facebookAuth.callbackURL,
+        profileFields: ['id', 'photos', 'emails','name']
+
+	  },
+	  function(accessToken, refreshToken, profile, done) {
+	    	process.nextTick(function(){
+                 var collection = dbCOnnectionObj.collection('users');
+	    		collection.findOne({'facebook.id': profile.id}, function(err, user){
+	    			if(err)
+	    				return done(err);
+	    			if(user)
+	    				return done(null, user);
+	    			else {
+                        console.log(JSON.stringify(profile)
+                        );
+                        
+	    				var newUser = {
+                            facebook: {}
+                        };
+	    				newUser.facebook.id = profile.id;
+	    				newUser.facebook.token = accessToken;
+	    				newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
+	    				newUser.facebook.email = profile.emails[0].value;
+                        newUser.facebook.photo = profile.photos[0].value;
+                        console.log("**********"+JSON.stringify(newUser.facebook));
+                        
+	    				 collection.insertOne(newUser.facebook, function(err){
+	    					if(err)
+	    						throw err;
+	    				 	return done(null, profile);
+	    				})
+	    			}
+	    		});
+	    	});
+	    }
+
+	));
+
 // app.listen('8001', 'localhost');
 // console.log('Server started at 8001');
 
