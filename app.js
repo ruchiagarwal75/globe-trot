@@ -111,6 +111,9 @@ app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}))
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
+      console.log(JSON.stringify(req.url));
+      
+    //  alert('hereee');
     // Successful authentication, redirect home.
     res.redirect('/dashboard');
   });
