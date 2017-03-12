@@ -176,7 +176,8 @@ textarea {
 }
 
 .forgot {
-  margin-top: -20px;
+  float: right;
+  margin-top: 25px;
   text-align: right;
 }
 .checkbox {

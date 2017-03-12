@@ -2,12 +2,15 @@ var express = require('express');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
+var sessions= require('client-sessions');
+var bcrypt=require('bcryptjs');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var configAuth = require('./config/auth');
 app.use(passport.initialize());
 app.use(passport.session());
 var dbCOnnectionObj;
+
 // Connect to the db
 var port = process.env.PORT || 8080
 MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot", function(err, db) {
@@ -29,10 +32,22 @@ var bodyParser=require('body-parser');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 
+//session management
+app.use(sessions({
+    cookieName:'session',
+    secret:'hjgwdjhnasbch2r4rcu7867hbgujgqyu287863vxqv'
+}));
+
 app.get('/', function (req, res) {
+     if(req.session){
+        req.session.reset();
+    }
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/login', function (req, res) {
+     if(req.session){
+        req.session.reset();
+    }
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -40,7 +55,7 @@ app.post('/login', function (req, res) {
     var collection = dbCOnnectionObj.collection('users');
     collection.findOne({Email: req.body.email}, function(err, item) {
         if (item) {
-            res.cookie('user', req.body.email);
+            req.session.users = item;
             res.redirect('/dashboard');
         }
         else {
@@ -61,7 +76,17 @@ app.post('/addtrip', function (req, res) {
    });
 });
 app.get('/dashboard', function (req, res) {
-    res.sendFile(__dirname + '/dashboard.html');
+    var session = req.session;
+     if(! (Object.keys(session).length === 0 && session.constructor === Object)){
+        var user = session.passport.user || session.users; 
+        res.render('dashboard', {user: user});  
+     }
+      else{
+        console.log('session doesnot exist');
+        session.reset();
+        res.redirect('/login');
+    }
+
 });
 app.get('/addtrip', function (req, res) {
      res.sendFile(__dirname + '/addtrip.html');
@@ -113,8 +138,6 @@ passport.deserializeUser(function(user, done) {
 	    			if(user)
 	    				return done(null, user);
 	    			else {
-                        console.log(JSON.stringify(profile)
-                        );
                         
 	    				var newUser = {
                             facebook: {}
@@ -124,8 +147,7 @@ passport.deserializeUser(function(user, done) {
 	    				newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
 	    				newUser.facebook.email = profile.emails[0].value;
                         newUser.facebook.photo = profile.photos[0].value;
-                        console.log("**********"+JSON.stringify(newUser.facebook));
-                        
+                       
 	    				 collection.insertOne(newUser.facebook, function(err){
 	    					if(err)
 	    						throw err;
