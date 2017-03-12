@@ -2,7 +2,7 @@ module.exports = {
     'facebookAuth' : {
             'clientID': '1357709224267178',
             'clientSecret': '5c9156bde15bff5d76afb614c72644dd',
-            'callbackURL': 'http://localhost:8080/auth/facebook/callback'
+            'callbackURL': 'https://globetrot.herokuapp.com/auth/facebook/callback'
         },
 
         'googleAuth' : {
