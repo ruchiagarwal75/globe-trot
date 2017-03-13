@@ -9,6 +9,8 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var configAuth = require('./config/auth');
 app.use(passport.initialize());
 app.use(passport.session());
+
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var dbCOnnectionObj;
 
 // Connect to the db
@@ -53,20 +55,22 @@ app.get('/login', function (req, res) {
 
 app.post('/login', function (req, res) {
     var collection = dbCOnnectionObj.collection('users');
-    collection.findOne({Email: req.body.email}, function(err, item) {
+    collection.findOne({email: req.body.email}, function(err, item) {
         if (item) {
-            req.session.users = item;
+            req.session.user = item;
             res.redirect('/dashboard');
         }
         else {
-            console.log('Bad req');
+            console.log('Wrong Credentials');
+            res.redirect('/login');
         }
     });
 });
 app.post('/addtrip', function (req, res) {
     var collection = dbCOnnectionObj.collection('TravelDetails');
     //console.log(JSON.stringify(req.body));
-    collection.insertOne({user:'r@gmail.com',StartPoint:req.body.origincity,EndPoint:req.body.destinationcity,StartDate:req.body.startdate}, function(err, item) {
+    var email = (req.session.user && req.session.user.email) || req.session.passport.user.email;
+    collection.insertOne({user: email,StartPoint:req.body.origincity,EndPoint:req.body.destinationcity,StartDate:req.body.startdate}, function(err, item) {
         if (item) {
             res.redirect('/mytrips');
         }
@@ -78,11 +82,11 @@ app.post('/addtrip', function (req, res) {
 app.get('/dashboard', function (req, res) {
     var session = req.session;
      if(! (Object.keys(session).length === 0 && session.constructor === Object)){
-        var user = session.passport.user || session.users; 
+        var user = (session.passport && session.passport.user) || session.user; 
         res.render('dashboard', {user: user});  
      }
       else{
-        console.log('session doesnot exist');
+        console.log(' dashboard session doesnot exist');
         session.reset();
         res.redirect('/login');
     }
@@ -94,7 +98,8 @@ app.get('/addtrip', function (req, res) {
 app.get('/mytrips', function (req, res) {
     var userTrips = [];
     var collection = dbCOnnectionObj.collection('TravelDetails');
-    collection.find({user: 'r@gmail.com'}, function(err, trips) {
+    var email = (req.session.user && req.session.user.email) ||(req.session.passport && req.session.passport.user.email) || 'nouser';
+    collection.find({user: email}, function(err, trips) {
         trips.each(function(err, item){
          if(item)
             userTrips.push(item);
@@ -106,6 +111,7 @@ app.get('/mytrips', function (req, res) {
     },1000);
 });
 
+//*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
 
 app.get('/auth/facebook/callback',
@@ -135,7 +141,7 @@ passport.deserializeUser(function(user, done) {
 	  function(accessToken, refreshToken, profile, done) {
 	    	process.nextTick(function(){
                  var collection = dbCOnnectionObj.collection('users');
-	    		collection.findOne({'facebook.id': profile.id}, function(err, user){
+	    		collection.findOne({'id': profile.id}, function(err, user){
 	    			if(err)
 	    				return done(err);
 	    			if(user)
@@ -154,7 +160,7 @@ passport.deserializeUser(function(user, done) {
 	    				 collection.insertOne(newUser.facebook, function(err){
 	    					if(err)
 	    						throw err;
-	    				 	return done(null, profile);
+	    				 	return done(null, newUser.facebook);
 	    				})
 	    			}
 	    		});
@@ -162,6 +168,63 @@ passport.deserializeUser(function(user, done) {
 	    }
 
 	));
+//****************FACEBOOK AUTH ENDS HERE */
+
+//***** GOOGLE AUTH START HERE */
+app.get('/auth/google', passport.authenticate('google', {scope: ['profile','email']}));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+      console.log(JSON.stringify(req.url));
+      
+    //  alert('hereee');
+    // Successful authentication, redirect home.
+    res.redirect('/dashboard');
+  });
+
+ passport.use(new GoogleStrategy({
+	    clientID: configAuth.googleAuth.clientID,
+	    clientSecret: configAuth.googleAuth.clientSecret,
+	    callbackURL: configAuth.googleAuth.callbackURL,
+        profileFields: ['id', 'photos', 'emails','name']
+
+	  },
+	  function(accessToken, refreshToken, profile, done) {
+	    	process.nextTick(function(){
+                 var collection = dbCOnnectionObj.collection('users');
+	    		collection.findOne({'id': profile.id}, function(err, user){
+	    			if(err)
+	    				return done(err);
+	    			if(user)
+	    				return done(null, user);
+	    			else {
+                        
+	    				var newUser = {
+                            google: {}
+                        };
+	    				newUser.google.id = profile.id;
+	    				newUser.google.token = accessToken;
+	    				newUser.google.name = profile.displayName;
+	    				newUser.google.email = profile.emails[0].value;
+                        newUser.google.photo = profile.photos[0].value;
+                       
+	    				 collection.insertOne(newUser.google, function(err){
+	    					if(err)
+	    						throw err;
+	    				 	return done(null, google);
+	    				})
+	    			}
+	    		});
+	    	});
+	    }
+
+	));
+  //*********GOOGLE AUTH END HERE */
+
+
+
+
 
 // app.listen('8001', 'localhost');
 // console.log('Server started at 8001');
