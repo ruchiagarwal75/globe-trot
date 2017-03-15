@@ -11,11 +11,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
 var dbCOnnectionObj;
 
-// Connect to the db test
-// test commit TEST
-var port = process.env.PORT || 8080
+// Connect to the db
+var port = process.env.PORT || 8000
 MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot", function(err, db) {
   if(!err) {
     console.log("Database connection made!");
@@ -25,6 +25,7 @@ MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot
       console.log('Error in connecting to database');
   }
 });
+
 //adding static files
 app.use('/static', express.static('static'));
 
@@ -35,22 +36,13 @@ var bodyParser=require('body-parser');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 
+
 //session management
 app.use(sessions({
     cookieName:'session',
     secret:'hjgwdjhnasbch2r4rcu7867hbgujgqyu287863vxqv'
 }));
-
 app.get('/', function (req, res) {
-     if(req.session){
-        req.session.reset();
-    }
-    res.sendFile(__dirname + '/index.html');
-});
-app.get('/login', function (req, res) {
-     if(req.session){
-        req.session.reset();
-    }
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -67,6 +59,7 @@ app.post('/login', function (req, res) {
         }
     });
 });
+
 app.post('/addtrip', function (req, res) {
     var collection = dbCOnnectionObj.collection('TravelDetails');
     //console.log(JSON.stringify(req.body));
@@ -80,38 +73,52 @@ app.post('/addtrip', function (req, res) {
         }
    });
 });
-app.get('/dashboard', function (req, res) {
-    var session = req.session;
-     if(! (Object.keys(session).length === 0 && session.constructor === Object)){
-        var user = (session.passport && session.passport.user) || session.user; 
-        res.render('dashboard', {user: user});  
-     }
-      else{
-        console.log(' dashboard session doesnot exist');
-        session.reset();
-        res.redirect('/login');
-    }
 
+app.get('/dashboard', function (req, res) {
+    res.sendFile(__dirname + '/dashboard.html');
 });
-app.get('/addtrip', function (req, res) {
-     res.sendFile(__dirname + '/addtrip.html');
-});
-app.get('/mytrips', function (req, res) {
-    var userTrips = [];
-    var collection = dbCOnnectionObj.collection('TravelDetails');
-    var email = (req.session.user && req.session.user.email) ||(req.session.passport && req.session.passport.user.email) || 'nouser';
-    collection.find({user: email}, function(err, trips) {
+
+app.get('/trips', function (req, res) {
+    //res.sendFile(__dirname + '/trips.html');
+    var dataTrips = [];
+    var collection = dbCOnnectionObj.collection('trips');
+    collection.find({origin : Rupali},function(err, trips) {
         trips.each(function(err, item){
-         if(item)
-            userTrips.push(item);
+            if(item)
+                dataTrips.push(item);
         });
     });
     setTimeout(function(){
-        res.render('mytrips', {trips: userTrips});  
+        res.render('trips', {tripsData: dataTrips});
+        res.end();
+    },500);
+
+});
+
+app.get('/addtrip', function (req, res) {
+     res.sendFile(__dirname + '/addtrip.html');
+});
+
+
+app.get('/fire', function (req, res) {
+     res.render('firebaseauth');
+});
+
+app.get('/mytrips', function (req, res) {
+    var userTrips = [];
+    var collection = dbCOnnectionObj.collection('TravelDetails');
+    collection.find({user: 'r@gmail.com'}, function(err, trips) {
+        trips.each(function(err, item){
+         if(item)
+            userTrips.push(item);
+            console.log("userTrips",userTrips);
+        });
+    });
+    setTimeout(function(){
+        res.render('mytrips', {trips: userTrips});
         res.end(); 
     },1000);
 });
-
 //*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
 
@@ -222,8 +229,6 @@ app.get('/auth/google/callback',
 
 	));
   //*********GOOGLE AUTH END HERE */
-
-
 
 
 

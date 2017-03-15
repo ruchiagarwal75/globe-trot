@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/css/dashboard.css">
+    <link rel="stylesheet" href="static/css/bootstrap.css">
+    <script type="text/javascript" src="static/js/angular.min.js"></script>
+    <script type="text/javascript" src="/static/js/tripsController.js"></script>
+
+
+</head>
+<body ng-app="myApp"  ng-controller="myCtrl" style="background-color: #2aabd2;">
+<div class="container">
+    <div class="row">
+        <div class="col-md-6"><h1>{{trips.length}} TRIPS</h1></div>
+        <div class="col-md-6 text-right"><h1>DEMO</h1></div>
+    </div>
+</div>
+
+<div class="flex-container">
+    <div class="flex-item" ng-repeat="item in trips" style="background-color: #defdff;">
+        <div class="innerContainer">
+            <div class="innerDivs">
+                <div class="flex-container" style="border-bottom: thin dotted black;">
+                    <div class="rows1_2">
+
+                        <h3 style=" line-height: 80px; width: 200px; height: 45px; color: blue;">
+                            <img class="img-thumbnail" src="{{item.imageUrl}}" alt="Avtar" height="60" width="60">{{item.name}}</h3>
+                        <span style="text-align: left; line-height: 60px; width: 145px; height: 45px;">Views {{item.view}}</span>
+                    </div>
+                    <div class="rows1_2" style="text-align: right; line-height: 30px; height: 45px; width: 120px;">{{item.type}}</div>
+                </div>
+            </div>
+            <div class="innerDivs">
+                <div class="flex-container"  style="border-bottom: thin dotted black;">
+                    <div class="rows1_2">
+                        <span style="font-weight: bolder; font-size: 17px; line-height: 30px;">{{item.origin}} - </span>
+                        <span style="font-weight: bolder; font-size: 17px; line-height: 30px;">{{item.destination}}</span><br>
+                        <span style="font-weight: bolder; font-size: 17px; line-height: 30px;">{{item.date}}</span><br>
+                        <span style="font-weight: bolder; font-size: 17px; line-height: 30px;">{{item.status}}</span>
+                    </div>
+                    <div class="rows1_2" style="text-align: right; line-height: 30px; height: 45px; width: 120px;">{{item.airline}}</div>
+                </div>
+            </div>
+            <div class="innerDivs">
+                <div class="flex-container">
+                    <div class="row3" >Profile</div>
+                    <div class="row3">Details</div>
+                    <div class="row3">Contact</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
