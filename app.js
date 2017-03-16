@@ -66,6 +66,21 @@ app.post('/login', function (req, res) {
         }
     });
 });
+app.post('/register', function (req,res){
+    var userDetails = req.body;
+    var newUser = {
+        email: userDetails.email,
+        name: userDetails.first_name +" "+ userDetails.last_name,
+        password: userDetails.password 
+    };
+     var collection = dbCOnnectionObj.collection('users');
+     collection.insertOne(newUser, function(err, item) {
+        if (err) {
+            return err;
+        }
+        res.redirect('/');
+   });
+});
 app.post('/addtrip', function (req, res) {
     var collection = dbCOnnectionObj.collection('TravelDetails');
     var email = (req.session.user && req.session.user.email) || req.session.passport.user.email;
