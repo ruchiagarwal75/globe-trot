@@ -1,0 +1,45 @@
+<html>
+    <head>
+		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="static/css/dashboard.css">
+        		<link rel="stylesheet" href="static/css/groups.css">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+ <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+       <script src="static/js/groups.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	</head>
+    <body ng-app="mainApp" ng-controller="app">
+        <div class="page-wrapper"></div>
+        <div role="main" class="pagecontent">
+        <nav>
+            <a id="logo" href="/dashboard"><img src="http://www.freeiconspng.com/uploads/--global-globe-plane-travel-worldwide-icon--icon-search-engine-1.png" /></a>
+            <a class="nav" href="/">logout</a>
+            <a class="nav" href="/profile">profile</a>
+            <a class="nav" href="/groups">groups</a>
+        </nav>
+        <div id="succ" class="hide alert alert-success" style="width:300px"><span id="msgicon" class="glyphicon glyphicon-ok-circle"></span><span style="margin-left: 5px">Group Created</span><a href="#" class="close" data-dismiss="alert">&times</a> </div>
+            <section>
+                
+                    <div class="field-wrap">
+                        <label>
+                        Group Name<span class="req">*</span>
+                        </label>
+                        <input type="text" ng-model="groupName" name="group-name" required autocomplete="off"/>
+                    </div>
+                      <div class="field-wrap">
+                        <label>
+                        Add Someone<span class="req"></span>
+                        </label>
+                        <input ng-model="member" ng-keyup="searchEnter()" type="text" name="member"  autocomplete="off"/>
+                    </div>
+                  <button ng-click="createGroup()" href="/creategroup" class="cust-button" style="width:30%; margin-left:33%;font-size:15px">Create new  Group</button>
+               
+                <ul>
+                    <li style="font-weight:900;" ng-repeat="mem in members">{{mem}}<span ng-click="removeMember(mem)" class="remove"> x</span></li>
+                </ul>
+            </section>
+        </div>
+       
+    </body>
+</html>

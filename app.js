@@ -57,7 +57,7 @@ app.post('/login', function (req, res) {
     var collection = dbCOnnectionObj.collection('users');
     collection.findOne({email: req.body.email}, function(err, item) {
         if (item) {
-            req.session.user = item;
+            req.session.passport.user = item;
             res.redirect('/dashboard');
         }
         else {
@@ -125,6 +125,23 @@ app.get('/mytrips', function (req, res) {
     },1000);
 });
 
+app.get('/groups', function (req, res){
+    res.render('groups');
+});
+app.post('/createGroup', function(req,res){
+    var group = req.body;
+    group.user = req.session.passport.user.email;
+    var collection = dbCOnnectionObj.collection('groups');
+    collection.insertOne(group, function(err){
+        if(err) {
+            res.send(err);
+        }
+        else {
+            res.send('success');
+        }
+    });
+   
+});
 //*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
 
