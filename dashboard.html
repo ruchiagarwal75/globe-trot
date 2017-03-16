@@ -2,6 +2,14 @@
     <head>
 		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="static/css/dashboard.css">
+		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+    	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"
+            type="text/javascript"></script>
+    	<script src="static/js/air-port-codes-api-min.js"></script>
+    	<script type="text/javascript" src="static/js/dashboard-script.js"></script>
+
 	</head>
     <body>
         <div class="page-wrapper"></div>
@@ -22,6 +30,20 @@
                 <a href="/mytrips" class="cust-button">My Trips</a>
                 <a href="/addtrip" class="cust-button">Add a Trip</a>
             </section>
+        
+		<br><br>
+        <div class="searchHolder">
+            <div class="searchOrigin">
+                <input class="autocomplete" id="inputOrigin" text="text" name="term"
+                       placeholder="Origin City or Airport"/>
+            </div>
+            <div class="searchDest">
+                <input class="autocomplete" id="inputDest" type="text" name="term"
+                       placeholder="Destination City or Airport"/>
+                <button class="findBtn" type="button" onclick="search()">Find</button>
+            </div>
         </div>
-    </body>
+    </div>
+</div>
+</body>
 </html>
