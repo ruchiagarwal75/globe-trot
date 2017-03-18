@@ -13,7 +13,8 @@ app.use(passport.session());
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var dbCOnnectionObj;
 
-// Connect to the db
+// Connect to the db test
+// test commit TEST
 var port = process.env.PORT || 8080
 MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot", function(err, db) {
   if(!err) {
@@ -106,8 +107,28 @@ app.get('/dashboard', function (req, res) {
     }
 
 });
+app.get('/trips', function (req, res) {
+    var dataTrips = [];
+    var collection = dbCOnnectionObj.collection('trips');
+    collection.find(function (err, trips) {
+        trips.each(function (err, item) {
+            if (item)
+                dataTrips.push(item);
+        });
+    });
+    setTimeout(function () {
+        res.render('trips', {tripsData: dataTrips});
+        res.end();
+    }, 500);
+
+});
+
 app.get('/addtrip', function (req, res) {
      res.sendFile(__dirname + '/addtrip.html');
+});
+
+app.get('/fire', function (req, res) {
+    res.render('firebaseauth');
 });
 app.get('/mytrips', function (req, res) {
     var userTrips = [];
