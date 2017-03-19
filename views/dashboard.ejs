@@ -2,6 +2,13 @@
     <head>
 		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="static/css/dashboard.css">
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+    	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"
+            type="text/javascript"></script>
+    	<script src="static/js/air-port-codes-api-min.js"></script>
+    	<script type="text/javascript" src="static/js/dashboard-script.js"></script>
+
 	</head>
     <body>
         <div class="page-wrapper"></div>
@@ -24,6 +31,23 @@
                 <a href="/mytrips" class="cust-button">My Trips</a>
                 <a href="/addtrip" class="cust-button">Add a Trip</a>
             </section>
+
+	<br><br>
+    <form action="/trips" method="post">
+        <divclass="searchHolder">
+
+            <div class="searchOrigin">
+                <input class="autocomplete" id="inputOrigin" text="text" name="term"
+                       placeholder="Origin City or Airport"/>
+            </div>
+            <div class="searchDest">
+                <input class="autocomplete" id="inputDest" type="text" name="term"
+                       placeholder="Destination City or Airport"/>
+                <input type="submit" class="findBtn" value="Find"/>
+            </div>
+
+        </div>
+    </form>
         </div>
     </body>
 </html>

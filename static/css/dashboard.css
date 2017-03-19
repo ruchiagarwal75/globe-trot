@@ -288,3 +288,14 @@ section {
     height: 75px;
     color: blue;
 }
+li{
+    background-color: #5e65cc;
+    width: 250px;
+    height: auto;
+    font-size: 25px;
+    color: white;
+}
+ul
+{
+    list-style-type: none;
+}
