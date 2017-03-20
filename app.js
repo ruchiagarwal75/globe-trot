@@ -63,7 +63,7 @@ app.post('/login', function (req, res) {
     var collection = dbCOnnectionObj.collection('users');
     collection.findOne({email: req.body.email}, function(err, item) {
         if (item) {
-            req.session.user = item;
+            req.session.passport.user = item;
             res.redirect('/dashboard');
         }
         else {
@@ -72,9 +72,23 @@ app.post('/login', function (req, res) {
         }
     });
 });
+app.post('/register', function (req,res){
+    var userDetails = req.body;
+    var newUser = {
+        email: userDetails.email,
+        name: userDetails.first_name +" "+ userDetails.last_name,
+        password: userDetails.password 
+    };
+     var collection = dbCOnnectionObj.collection('users');
+     collection.insertOne(newUser, function(err, item) {
+        if (err) {
+            return err;
+        }
+        res.redirect('/');
+   });
+});
 app.post('/addtrip', function (req, res) {
     var collection = dbCOnnectionObj.collection('TravelDetails');
-    //console.log(JSON.stringify(req.body));
     var email = (req.session.user && req.session.user.email) || req.session.passport.user.email;
     collection.insertOne({user: email,StartPoint:req.body.origincity,EndPoint:req.body.destinationcity,StartDate:req.body.startdate}, function(err, item) {
         if (item) {
@@ -139,16 +153,29 @@ app.get('/mytrips', function (req, res) {
     },1000);
 });
 
+app.get('/groups', function (req, res){
+    res.render('groups');
+});
+app.post('/createGroup', function(req,res){
+    var group = req.body;
+    group.user = req.session.passport.user.email;
+    var collection = dbCOnnectionObj.collection('groups');
+    collection.insertOne(group, function(err){
+        if(err) {
+            res.send(err);
+        }
+        else {
+            res.send('success');
+        }
+    });
+   
+});
 //*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
 
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-      console.log(JSON.stringify(req.url));
-      
-    //  alert('hereee');
-    // Successful authentication, redirect home.
     res.redirect('/dashboard');
   });
 
@@ -204,10 +231,6 @@ app.get('/auth/google', passport.authenticate('google', {scope: ['profile','emai
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
-      console.log(JSON.stringify(req.url));
-      
-    //  alert('hereee');
-    // Successful authentication, redirect home.
     res.redirect('/dashboard');
   });
 
@@ -240,7 +263,7 @@ app.get('/auth/google/callback',
 	    				 collection.insertOne(newUser.google, function(err){
 	    					if(err)
 	    						throw err;
-	    				 	return done(null, google);
+	    				 	return done(null, newUser.google);
 	    				})
 	    			}
 	    		});
