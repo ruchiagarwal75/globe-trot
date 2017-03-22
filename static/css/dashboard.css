@@ -155,7 +155,7 @@ section {
 .mytrips_wrapper header h1 {
     color: white
 }
-<<<<<<< HEAD
+
 .member-list {
     width: 100%;
     display: flex;
@@ -172,7 +172,7 @@ section {
     font-size: 18px;
     line-height: 40px;
 }
-=======
+
 .searchHolder{
     width: 700px;
     height: 60px;
@@ -306,4 +306,15 @@ section {
     height: 75px;
     color: blue;
 }
->>>>>>> 6a4740858eb920e6979f1a47413881d501ccdfa3
+li{
+    background-color: #5e65cc;
+    width: 250px;
+    height: auto;
+    font-size: 25px;
+    color: white;
+}
+ul
+{
+    list-style-type: none;
+}
+

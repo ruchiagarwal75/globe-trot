@@ -1,29 +1,55 @@
 <html>
-    <head>
-		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" href="static/css/dashboard.css">
-	</head>
-    <body>
-        <div class="page-wrapper"></div>
-        <div role="main" class="pagecontent">
-        <nav>
-            <a id="logo" href="/dashboard"><img src="http://www.freeiconspng.com/uploads/--global-globe-plane-travel-worldwide-icon--icon-search-engine-1.png" /></a>
-            <img style="border-radius:50%; float: right; margin-right:45px" src=<%= user.photo %> />
-            <a class="nav" href="/">logout</a>
-            <a class="nav" href="/profile">profile</a>
-            <a class="nav" href="/groups">groups</a>
-        </nav>
-            <header>
-            <h1>Welcome to Globe Trot</h1>
-        </header>
-            <hgroup>
-                <h2>Share the Journey Together</h2>
-                <h3>Find Companions for Your Next Travel</h3>
-            </hgroup>
-            <section>
-                <a href="/mytrips" class="cust-button">My Trips</a>
-                <a href="/addtrip" class="cust-button">Add a Trip</a>
-            </section>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="static/css/dashboard.css">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"
+            type="text/javascript"></script>
+    <script src="static/js/air-port-codes-api-min.js"></script>
+    <script type="text/javascript" src="static/js/dashboard-script.js"></script>
+
+</head>
+<body>
+<div class="page-wrapper"></div>
+<div role="main" class="pagecontent">
+    <nav>
+        <a id="logo" href="/dashboard"><img
+                    src="http://www.freeiconspng.com/uploads/--global-globe-plane-travel-worldwide-icon--icon-search-engine-1.png"/></a>
+        <img style="border-radius:50%; float: right; margin-right:45px" src=<%= user.photo %>/>
+        <a class="nav" href="/">logout</a>
+        <a class="nav" href="/profile">profile</a>
+
+    </nav>
+    <header>
+        <h1>Welcome to Globe Trot</h1>
+    </header>
+    <hgroup>
+        <h2>Share the Journey Together</h2>
+        <h3>Find Companions for Your Next Travel</h3>
+    </hgroup>
+    <section>
+        <a href="/mytrips" class="cust-button">My Trips</a>
+        <a href="/addtrip" class="cust-button">Add a Trip</a>
+    </section>
+
+    <br><br>
+    <form action="/trips" method="post">
+        <div class="searchHolder">
+
+            <div class="searchOrigin">
+                <input class="autocomplete" id="inputOrigin" text="text" name="term"
+                       placeholder="Origin City or Airport"/>
+            </div>
+            <div class="searchDest">
+                <input class="autocomplete" id="inputDest" type="text" name="term"
+                       placeholder="Destination City or Airport"/>
+                <input type="submit" class="findBtn" value="Find"/>
+            </div>
+
         </div>
-    </body>
+    </form>
+
+</div>
+</body>
 </html>
