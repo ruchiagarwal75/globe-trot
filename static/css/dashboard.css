@@ -24,7 +24,7 @@ body {
     filter: blur(1px);
 }
 .mytrips {
-   background-image: url("http://p1.pichost.me/i/23/1464712.jpg");
+    background-image: url("http://p1.pichost.me/i/23/1464712.jpg");
     background-attachment: fixed;
     background-position: 80% 60%; 
     text-align: center;
@@ -38,6 +38,7 @@ body {
 
 .page-wrapper {
     background-image: url("http://caitflanders.com/wp-content/uploads/2016/05/intentional-lifestyle-bag.jpg");
+    background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: 30% 60%; 
