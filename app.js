@@ -3,13 +3,15 @@ var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
 var sessions= require('client-sessions');
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
 var bcrypt=require('bcryptjs');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var configAuth = require('./config/auth');
 app.use(passport.initialize());
 app.use(passport.session());
-
+var connections = [];
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var dbCOnnectionObj;
 
@@ -58,6 +60,7 @@ app.post('/login', function (req, res) {
     var collection = dbCOnnectionObj.collection('users');
     collection.findOne({email: req.body.email}, function(err, item) {
         if (item) {
+            req.session.passport = {};
             req.session.passport.user = item;
             res.redirect('/dashboard');
         }
@@ -96,7 +99,7 @@ app.post('/addtrip', function (req, res) {
 });
 app.get('/dashboard', function (req, res) {
     var session = req.session;
-     if(! (Object.keys(session).length === 0 && session.constructor === Object)){
+     if(! (Object.keys(session).length === 0 && session.constructor === Object)){ //checking if session exists
         var user = (session.passport && session.passport.user) || session.user; 
         res.render('dashboard', {user: user});  
      }
@@ -163,6 +166,80 @@ app.post('/createGroup', function(req,res){
     });
    
 });
+
+ 
+app.get('/contact', function(req,res){
+    res.sendFile(__dirname + '/contact.html');
+    var receiverName = req.query.receiverName;
+    var receiverEmail = req.query.receiverEmail;
+    var senderName = req.session.passport.user.name;
+     var senderEmail = req.session.passport.user.email;
+    io.sockets.on('connection', function(socket) {
+    connections.push(socket);
+    console.log('connected %s sockets', connections.length);
+
+    socket.on('disconnect', function(){
+        connections.splice(connections.indexOf(socket), 1);
+        req.session.reset();
+        console.log('Disconnected %s sockets connected', connections.length);
+    });
+    socket.on('send message', function(data) {
+        var chatid = getChatId(senderName, receiverName);
+        console.log(chatid);
+        var message = {
+          chatid: chatid,  
+          messge: data,
+          senderName: senderName,
+          senderEmail: senderEmail,
+          receiverName: receiverName,
+          receiverEmail: receiverEmail
+        }
+        io.sockets.emit('new message', {msg:data, user:senderName});
+         var collection = dbCOnnectionObj.collection('messages');
+         collection.find(function (err, trips) {
+             if(err) {
+                collection.insertOne(message, function(err){
+                    if(err) {
+                        res.send(err);
+                    }
+                    else {
+                        res.send('success');
+                    }
+                });
+             }
+             else {
+                  collection.insertOne(message, function(err){
+                    if(err) {
+                        res.send(err);
+                    }
+                    else {
+                        res.send('success');
+                    }
+                });
+             }
+            });
+    });
+})
+
+});
+ 
+
+function getChatId(str1, str2) {
+var str = str1+str2;
+return str.split('').sort(function (strA, strB) {
+    return strA.toLowerCase().localeCompare(strB.toLowerCase());
+}
+).join('')
+}
+
+
+
+
+
+
+
+
+
 //*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
 
@@ -274,7 +351,7 @@ app.get('/auth/google/callback',
 // console.log('Server started at 8001');
 
 
-app.listen(port, function() {
+server.listen(port, function() {
     console.log("App is running on port " + port);
 });
 
