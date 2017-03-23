@@ -9,6 +9,7 @@ var bcrypt=require('bcryptjs');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var configAuth = require('./config/auth');
+
 app.use(passport.initialize());
 app.use(passport.session());
 var connections = [];
@@ -17,7 +18,7 @@ var dbCOnnectionObj;
 
 // Connect to the db test
 // test commit TEST
-var port = process.env.PORT || 8080
+var port = process.env.PORT || 8080;
 MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot", function(err, db) {
   if(!err) {
     console.log("Database connection made!");
@@ -27,6 +28,8 @@ MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot
       console.log('Error in connecting to database');
   }
 });
+
+
 //adding static files
 app.use('/static', express.static('static'));
 
@@ -38,10 +41,12 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 
 //session management
-app.use(sessions({
+app.use(sessions(
+    {
     cookieName:'session',
     secret:'hjgwdjhnasbch2r4rcu7867hbgujgqyu287863vxqv'
-}));
+    })
+);
 
 app.get('/', function (req, res) {
      if(req.session){
@@ -102,6 +107,7 @@ app.get('/dashboard', function (req, res) {
      if(! (Object.keys(session).length === 0 && session.constructor === Object)){ //checking if session exists
         var user = (session.passport && session.passport.user) || session.user; 
         res.render('dashboard', {user: user});  
+
      }
       else{
         console.log(' dashboard session doesnot exist');
@@ -110,10 +116,12 @@ app.get('/dashboard', function (req, res) {
     }
 
 });
-app.get('/trips', function (req, res) {
+app.post('/trips', function (req, res) {
+    var searchBy = req.body;
+    console.log("origin :", searchBy.term[0], "destination :", searchBy.term[1]);
     var dataTrips = [];
     var collection = dbCOnnectionObj.collection('trips');
-    collection.find(function (err, trips) {
+    collection.find({origin: searchBy.term[0], destination: searchBy.term[1]},function (err, trips) {
         trips.each(function (err, item) {
             if (item)
                 dataTrips.push(item);
@@ -123,7 +131,6 @@ app.get('/trips', function (req, res) {
         res.render('trips', {tripsData: dataTrips});
         res.end();
     }, 500);
-
 });
 
 app.get('/addtrip', function (req, res) {
