@@ -176,11 +176,33 @@ app.post('/createGroup', function(req,res){
 
  
 app.get('/contact', function(req,res){
-    res.sendFile(__dirname + '/contact.html');
     var receiverName = req.query.receiverName;
     var receiverEmail = req.query.receiverEmail;
     var senderName = req.session.passport.user.name;
-     var senderEmail = req.session.passport.user.email;
+    var senderEmail = req.session.passport.user.email;
+    var collection = dbCOnnectionObj.collection('messages');
+    var trips;
+    var chats;
+    var chatid = getChatId(senderName, receiverName);
+     collection.findOne({chatid: chatid},function (err, responseData) {
+         if(responseData){
+             console.log('here');
+             
+              trips = responseData;
+              chats = responseData.message;
+              console.log(chats);
+              res.render('contact', {messages: chats});
+         }
+         else {
+             chats = [];
+             res.render('contact', {messages: chats});
+         }
+       
+     });
+   // res.sendFile(__dirname + '/contact.html');
+   console.log(chats+"789787898");
+   
+
     io.sockets.on('connection', function(socket) {
     connections.push(socket);
     console.log('connected %s sockets', connections.length);
@@ -191,42 +213,39 @@ app.get('/contact', function(req,res){
         console.log('Disconnected %s sockets connected', connections.length);
     });
     socket.on('send message', function(data) {
-        var chatid = getChatId(senderName, receiverName);
-        console.log(chatid);
+        var msg = [];
+        msg.push(senderName+" : "+data);
         var message = {
           chatid: chatid,  
-          messge: data,
+          message: msg,
           senderName: senderName,
           senderEmail: senderEmail,
           receiverName: receiverName,
           receiverEmail: receiverEmail
         }
         io.sockets.emit('new message', {msg:data, user:senderName});
-         var collection = dbCOnnectionObj.collection('messages');
-         collection.find(function (err, trips) {
-             if(err) {
+        
+            
+             if(!trips) {
+                 console.log("Value of message is ="+JSON.stringify(message));
                 collection.insertOne(message, function(err){
-                    if(err) {
-                        res.send(err);
-                    }
-                    else {
-                        res.send('success');
-                    }
+                  
+                });
+                trips=true;
+             }
+             else if(trips){
+                  var chat = senderName+" : "+data;
+                  collection.update({chatid:chatid},{$addToSet:{message: chat}}, function(err){
+                   if(!err) {
+                       console.log('saved new message');
+                   }
+                   else {
+                       console.log(err);
+                   }
                 });
              }
-             else {
-                  collection.insertOne(message, function(err){
-                    if(err) {
-                        res.send(err);
-                    }
-                    else {
-                        res.send('success');
-                    }
-                });
-             }
-            });
     });
-})
+});
 
 });
  
