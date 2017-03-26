@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <link href='static/css/fonts.css' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
+
+</head>
+
+<body >
+  <div class="form">
+
+
+
+
+        <div >
+          <h1>Update Profile</h1>
+
+          <form action="/profile" method="post">
+
+          <div class="top-row">
+            <div class="field-wrap">
+              <label>
+                First Name<span class="req">*</span>
+              </label>
+              <input type="text" name="first_name" required  value=<%= userDetail.fname %> />
+            </div>
+
+            <div class="field-wrap">
+              <label>
+                Last Name<span class="req">*</span>
+              </label>
+              <input type="text" name="last_name" value=<%= userDetail.lname %> />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label>
+              Email Address<span class="req">*</span>
+            </label>
+            <input type="email" name="email" required  value=<%= userDetail.email %> />
+          </div>
+
+          <!-- <div class="field-wrap">
+            <label>
+              Phone Number
+            </label>
+            <input type="tel" name="phone"  pattern="^(\+[0-9]{1,5})?([1-9][0-9]{9})$" />
+          </div>
+
+          <div class="field-wrap">
+            <label>
+              Address
+            </label>
+            <textarea name="address"></textarea>
+          </div>
+
+          <div class="top-row">
+
+
+            <div class="field-wrap">
+              <label>
+                Age
+              </label>
+              <input type="number" size="6" name="age" min="18" max="99" ><br>
+
+            </div>
+          </div>
+
+
+
+              <div class="radio-wrap">
+
+          <label>
+          Gender
+        </label><br/>
+
+          <input type="radio" id="gender1" name="gender" value="male" style="position:absolute;">
+          <label for="gender1"  ><span></span>Male</label><br/>
+
+          <input type="radio" id="gender2" name="gender" value="female" checked>
+          <label for="gender2"><span></span>Female</label>
+
+          <input type="radio" id="gender3" name="gender"  value="other" >
+          <label for="gender3" ><span></span>Other</label>
+
+          </div>
+
+
+          <div class="field-wrap">
+            <label>
+              /..................Dummy To be deleted......../
+            </label>
+            <textarea name="dummy"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>
+              Interest
+            </label>
+            <textarea name="interest"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>
+              References
+            </label>
+            <textarea name="references"></textarea>
+          </div>
+          <div class="field-wrap">
+            <label>
+              Rating
+            </label>
+            <textarea name="rating"></textarea>
+          </div> -->
+
+
+
+          <button type="submit" class="button button-block"/>Update</button>
+
+          </form>
+
+        </div>
+
+
+
+
+</div> <!-- /form -->
+  <script src='static/js/jquery.min.js'></script>
+
+    <script src="static/js/index.js"></script>
+
+
+            <h2>With Default Selection</h2>
+
+            <div class="acidjs-rating-stars">
+                <form>
+                    <input type="radio" name="group-2" id="group-2-0" value="5" /><label for="group-2-0"></label>
+                    <input type="radio" name="group-2" id="group-2-1" value="4" /><label for="group-2-1"></label>
+                    <input type="radio" checked="checked" name="group-2" id="group-2-2" value="3" /><label for="group-2-2"></label>
+                    <input type="radio" name="group-2" id="group-2-3" value="2" /><label for="group-2-3"></label>
+                    <input type="radio" name="group-2" id="group-2-4"  value="1" /><label for="group-2-4"></label>
+                </form>
+            </div>
+
+</body>
+</html>
