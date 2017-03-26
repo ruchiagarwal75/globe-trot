@@ -174,7 +174,24 @@ app.post('/createGroup', function(req,res){
    
 });
 
- 
+ app.get('/messages', function(req, res){
+        var user = req.session.passport.user.email;
+       var collection = dbCOnnectionObj.collection('messages');
+       console.log(user);
+       var chats = [];
+       collection.find( {$or : [{senderEmail:'mazgagan@gmail.com'}, {receiverEmail:'mazgagan@gmail.com'}]},function (err, responseData) {
+            responseData.each(function(err, item){
+                if(item) {
+                    chats.push(item);
+                }
+            });
+       });
+        setTimeout(function(){
+        res.render('messages', {chats: chats});  
+      //  res.end(); 
+    },1000);
+     
+ });
 app.get('/contact', function(req,res){
     var receiverName = req.query.receiverName;
     var receiverEmail = req.query.receiverEmail;
@@ -200,7 +217,7 @@ app.get('/contact', function(req,res){
        
      });
    // res.sendFile(__dirname + '/contact.html');
-   console.log(chats+"789787898");
+ 
    
 
     io.sockets.on('connection', function(socket) {
