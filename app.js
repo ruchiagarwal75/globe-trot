@@ -2,15 +2,17 @@ var express = require('express');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
-var sessions = require('client-sessions');
-var bcrypt = require('bcryptjs');
+var sessions= require('client-sessions');
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
+var bcrypt=require('bcryptjs');
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var configAuth = require('./config/auth');
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+var connections = [];
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var dbCOnnectionObj;
 
@@ -124,7 +126,8 @@ app.post('/login', function (req, res) {
     var collection = dbCOnnectionObj.collection('users');
     collection.findOne({email: req.body.email}, function (err, item) {
         if (item) {
-            req.session.user = item;
+            req.session.passport = {};
+            req.session.passport.user = item;
             res.redirect('/dashboard');
         }
         else {
@@ -164,12 +167,13 @@ app.get('/addtrip', function (req, res) {
 
 app.get('/dashboard', function (req, res) {
     var session = req.session;
-    if (!(Object.keys(session).length === 0 && session.constructor === Object)) {
+
+     if(! (Object.keys(session).length === 0 && session.constructor === Object)){ //checking if session exists
         var user = (session.passport && session.passport.user) || session.user;
-        //console.log('>>>',session);
         res.render('dashboard', {user: user});
-    }
-    else {
+
+     }
+      else{
         console.log(' dashboard session doesnot exist');
         session.reset();
         res.redirect('/login');
@@ -211,6 +215,112 @@ app.get('/mytrips', function (req, res) {
         res.end();
     }, 1000);
 });
+
+app.get('/groups', function (req, res){
+    res.render('groups');
+});
+app.post('/createGroup', function(req,res){
+    var group = req.body;
+    group.user = req.session.passport.user.email;
+    var collection = dbCOnnectionObj.collection('groups');
+    collection.insertOne(group, function(err){
+        if(err) {
+            res.send(err);
+        }
+        else {
+            res.send('success');
+        }
+    });
+
+});
+
+
+app.get('/contact', function(req,res){
+    var receiverName = req.query.receiverName;
+    var receiverEmail = req.query.receiverEmail;
+    var senderName = req.session.passport.user.name;
+    var senderEmail = req.session.passport.user.email;
+    var collection = dbCOnnectionObj.collection('messages');
+    var trips;
+    var chats;
+    var chatid = getChatId(senderName, receiverName);
+     collection.findOne({chatid: chatid},function (err, responseData) {
+         if(responseData){
+             console.log('here');
+
+              trips = responseData;
+              chats = responseData.message;
+              console.log(chats);
+              res.render('contact', {messages: chats});
+         }
+         else {
+             chats = [];
+             res.render('contact', {messages: chats});
+         }
+
+     });
+   // res.sendFile(__dirname + '/contact.html');
+   console.log(chats+"789787898");
+
+
+    io.sockets.on('connection', function(socket) {
+    connections.push(socket);
+    console.log('connected %s sockets', connections.length);
+
+    socket.on('disconnect', function(){
+        connections.splice(connections.indexOf(socket), 1);
+        req.session.reset();
+        console.log('Disconnected %s sockets connected', connections.length);
+    });
+    socket.on('send message', function(data) {
+        var msg = [];
+        msg.push(senderName+" : "+data);
+        var message = {
+          chatid: chatid,
+          message: msg,
+          senderName: senderName,
+          senderEmail: senderEmail,
+          receiverName: receiverName,
+          receiverEmail: receiverEmail
+        }
+        io.sockets.emit('new message', {msg:data, user:senderName});
+
+
+             if(!trips) {
+                 console.log("Value of message is ="+JSON.stringify(message));
+                collection.insertOne(message, function(err){
+
+                });
+                trips=true;
+             }
+             else if(trips){
+                  var chat = senderName+" : "+data;
+                  collection.update({chatid:chatid},{$addToSet:{message: chat}}, function(err){
+                   if(!err) {
+                       console.log('saved new message');
+                   }
+                   else {
+                       console.log(err);
+                   }
+                });
+             }
+    });
+});
+
+});
+
+
+function getChatId(str1, str2) {
+var str = str1+str2;
+return str.split('').sort(function (strA, strB) {
+    return strA.toLowerCase().localeCompare(strB.toLowerCase());
+}
+).join('')
+}
+
+
+
+
 
 //*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
@@ -326,6 +436,7 @@ passport.use(new GoogleStrategy({
 // console.log('Server started at 8001');
 
 
-app.listen(port, function () {
+
+server.listen(port, function() {
     console.log("App is running on port " + port);
 });
