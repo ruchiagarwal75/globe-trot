@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+         <script src="static/js/socket.js"></script>
+         <style>
+             body {
+                 margin-top: 30px;
+                 }
+         </style>
+    </head>
+    <body ng-app="myApp" ng-controller="app">
+        <div class="container">
+            <div class="row">
+                
+
+                <div class="col-md-8">
+                 <% messages.forEach(function(item) { %>
+                  <div class="chat"><div class="well"><%= item %></div></div>
+           <% }) %>
+                    <div class="chat" id="chat"></div>
+
+                    <form id="messageForm">
+                        <div class="form-group">
+                            <label>Enter Message</label>
+                            <textarea class="form-control" id="message"></textarea>
+                            <br/>
+                            <input type="submit" class="btn btn-primary" value="send message">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+        var myApp = angular.module('myApp', ['btford.socket-io']); 
+       myApp.factory('Socket', ['socketFactory', function(socketFactory){
+
+           return socketFactory();
+       }]); 
+
+       myApp.controller('app', ['$scope', 'Socket', function($scope, Socket){
+           Socket.connect();
+           $scope.$on('locationChangeStart', function(event){
+                Socket.disconnect(true);
+           });
+       }]);
+        </script>
+    </body>
+</html>
