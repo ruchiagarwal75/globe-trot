@@ -12,13 +12,15 @@
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
-                    <div id="users" class="well">
-                        <h3>Online users</h3>
-                        <ul class="list-group" id="users"></ul>
-                    </div>
+                
+                <div style="display:none">
+                    <div id="chatid"><%= chatid %></div>
+                    <div id="receiverName"><%= msg.receiverName %></div>
+                    <div id="receiverEmail"><%= msg.receiverEmail %></div>
+                    <div id="senderName"><%= msg.senderName %></div>
+                    <div id="senderEmail"><%= msg.senderEmail %></div>
+                    <div id="trips"><%= msg.trips %></div>
                 </div>
-
                 <div class="col-md-8">
                  <% messages.forEach(function(item) { %>
                   <div class="chat"><div class="well"><%= item %></div></div>
@@ -45,15 +47,29 @@
                 var $users = $('#users');
                 $messageForm.on('submit', function(e){
                     e.preventDefault();
-                    socket.emit('send message', $message.val());
+                    var data = {};
+                    data.chatid = $('#chatid').text();
+                    data.receiverName = $('#receiverName').text();
+                    data.receiverEmail = $('#receiverEmail').text();
+                    data.senderName = $('#senderName').text();
+                    data.senderEmail = $('#senderEmail').text();
+                    console.log( $('#trips').text());
+                    data.trips = $('#trips').text();
+                    data.msg = $message.val();
+                    socket.emit('send message', data );
                     $message.val('');
 
                 });
                 socket.on('new message', function(data){
-                    console.log(data.msg);
                     $chat.append('<div class="well">'+data.user+' : '+data.msg+'</div>');
                 });
-            })
+                  window.onunload = function(){
+                      console.log("cnjsmdn");
+                      socket.close();
+                socket.disconnect();
+            };
+            });
+          
         </script>
     </body>
 </html>

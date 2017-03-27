@@ -78,7 +78,7 @@ app.get('/', function (req, res) {
 app.get('/login', function (req, res) {
 
     if (req.session) {
-        req.session.reset();
+        //req.session.reset();
     }
     res.sendFile(__dirname + '/index.html');
 });
@@ -209,7 +209,7 @@ app.get('/fire', function (req, res) {
 });
 app.get('/mytrips', function (req, res) {
     var userTrips = [];
-    var collection = dbCOnnectionObj.collection('TravelDetails');
+    var collection = dbCOnnectionObj.collection('trips');
     var email = (req.session.user && req.session.user.email) || (req.session.passport && req.session.passport.user.email) || 'nouser';
     collection.find({user: email}, function (err, trips) {
         trips.each(function (err, item) {
@@ -241,67 +241,79 @@ app.post('/createGroup', function(req,res){
 
 });
 
-
-app.get('/contact', function(req,res){
-    var receiverName = req.query.receiverName;
-    var receiverEmail = req.query.receiverEmail;
-    var senderName = req.session.passport.user.name;
-    var senderEmail = req.session.passport.user.email;
-    var collection = dbCOnnectionObj.collection('messages');
-    var trips;
-    var chats;
-    var chatid = getChatId(senderName, receiverName);
-     collection.findOne({chatid: chatid},function (err, responseData) {
-         if(responseData){
-             console.log('here');
-
-              trips = responseData;
-              chats = responseData.message;
-              console.log(chats);
-              res.render('contact', {messages: chats});
-         }
-         else {
-             chats = [];
-             res.render('contact', {messages: chats});
-         }
-
-     });
-   // res.sendFile(__dirname + '/contact.html');
-   console.log(chats+"789787898");
-
-
-    io.sockets.on('connection', function(socket) {
-    connections.push(socket);
+ app.get('/messages', function(req, res){
+        if(!req.session.passport) {
+            console.log("session doesnt exist");
+            res.end();
+            return;
+        }
+        var user = req.session.passport.user.email;
+       var collection = dbCOnnectionObj.collection('messages');
+       console.log(user);
+       var chats = [];
+       var senders= [];
+       collection.find( {$or : [{senderEmail:user}, {receiverEmail:user}]},function (err, responseData) {
+            responseData.each(function(err, item){
+                if(item) {
+                    chats.push(item);
+                }
+            });
+       });
+       
+        setTimeout(function(){
+        for(var i =0; i<chats.length; i++){
+            var chat = chats[i];
+            if(chat.senderEmail == user){
+                senders.push({name: chat.receiverName, email: chat.receiverEmail});
+            }
+            else {
+                senders.push({name: chat.senderName, email: chat.senderEmail});
+            }
+        }
+        res.render('messages', {chats: senders});  
+      //  res.end(); 
+    },1000);
+     
+ });
+ var chatroom;
+  io.sockets.on('connection', function(socket) {
+    connections.push(socket);  
+    socket.join(chatroom); 
     console.log('connected %s sockets', connections.length);
-
+    
     socket.on('disconnect', function(){
         connections.splice(connections.indexOf(socket), 1);
-        req.session.reset();
         console.log('Disconnected %s sockets connected', connections.length);
     });
+    
     socket.on('send message', function(data) {
         var msg = [];
-        msg.push(senderName+" : "+data);
+        var collection = dbCOnnectionObj.collection('messages');
+        var trips = data.trips;
+        var chatid = data.chatid;
+        var senderName = data.senderName;
+        msg.push(senderName+" : "+data.msg);
         var message = {
-          chatid: chatid,
+          chatid: chatid,  
           message: msg,
           senderName: senderName,
-          senderEmail: senderEmail,
-          receiverName: receiverName,
-          receiverEmail: receiverEmail
+          senderEmail: data.senderEmail,
+          receiverName: data.receiverName,
+          receiverEmail: data.receiverEmail
         }
-        io.sockets.emit('new message', {msg:data, user:senderName});
 
-
+        io.sockets.to(chatid).emit('new message', {msg:data.msg, user:data.senderName});
+        
+            
              if(!trips) {
                  console.log("Value of message is ="+JSON.stringify(message));
                 collection.insertOne(message, function(err){
-
+                  
                 });
                 trips=true;
              }
              else if(trips){
-                  var chat = senderName+" : "+data;
+                  var chat = senderName+" : "+data.msg;
                   collection.update({chatid:chatid},{$addToSet:{message: chat}}, function(err){
                    if(!err) {
                        console.log('saved new message');
@@ -312,132 +324,167 @@ app.get('/contact', function(req,res){
                 });
              }
     });
-});
+  });
+  
+app.get('/contact', function(req,res){
+    console.log("contact");
+    var msg = {};
+     msg.receiverName = req.query.receiverName;
+     msg.receiverEmail = req.query.receiverEmail;
+     msg.senderName = req.session.passport.user.name;
+     msg.senderEmail = req.session.passport.user.email;
+    var collection = dbCOnnectionObj.collection('messages');
+    var chats;
+    
+    var chatid = getChatId(msg.senderName, msg.receiverName);
+    chatroom = chatid;
+    console.log(chatid+"***");
+     collection.findOne({chatid: chatid},function (err, responseData) {
+         if(responseData){
+             console.log(">>>"+responseData);
+              msg.trips = responseData;
+              chats = responseData.message;
+         }
+         else {
+             chats = [];
+         }
+         console.log(chats);
+       res.render('contact', {messages: chats, chatid: chatid, msg:msg});
+     });
+   // res.sendFile(__dirname + '/contact.html');
 
 });
-
+ 
 
 function getChatId(str1, str2) {
 var str = str1+str2;
-return str.split('').sort(function (strA, strB) {
+return str.toLowerCase().split('').sort(function (strA, strB) {
     return strA.toLowerCase().localeCompare(strB.toLowerCase());
 }
 ).join('')
 }
 
+
+
+
+app.get('/socket', function(req, res){
+    console.log("req mase successfully");
+    console.log(sessions[req.query.chatid]);
+    res.send(sessions[req.query.chatid]);
+});
+
+
+
+
 //*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
 
 app.get('/auth/facebook/callback',
-    passport.authenticate('facebook', {failureRedirect: '/login'}),
-    function (req, res) {
-        console.log(JSON.stringify(req.url));
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/dashboard');
+  });
 
-        //  alert('hereee');
-        // Successful authentication, redirect home.
-        res.redirect('/dashboard');
-    });
-
-passport.serializeUser(function (user, done) {
-    done(null, user);
+  passport.serializeUser(function(user, done) {
+  done(null, user);
 });
 
-passport.deserializeUser(function (user, done) {
-    done(null, user);
+passport.deserializeUser(function(user, done) {
+  done(null, user);
 });
-passport.use(new FacebookStrategy({
-        clientID: configAuth.facebookAuth.clientID,
-        clientSecret: configAuth.facebookAuth.clientSecret,
-        callbackURL: configAuth.facebookAuth.callbackURL,
-        profileFields: ['id', 'photos', 'emails', 'name']
+ passport.use(new FacebookStrategy({
+	    clientID: configAuth.facebookAuth.clientID,
+	    clientSecret: configAuth.facebookAuth.clientSecret,
+	    callbackURL: configAuth.facebookAuth.callbackURL,
+        profileFields: ['id', 'photos', 'emails','name']
 
-    },
-    function (accessToken, refreshToken, profile, done) {
-        process.nextTick(function () {
-            var collection = dbCOnnectionObj.collection('users');
-            collection.findOne({'id': profile.id}, function (err, user) {
-                if (err)
-                    return done(err);
-                if (user)
-                    return done(null, user);
-                else {
+	  },
+	  function(accessToken, refreshToken, profile, done) {
+	    	process.nextTick(function(){
+                 var collection = dbCOnnectionObj.collection('users');
+	    		collection.findOne({'id': profile.id}, function(err, user){
+	    			if(err)
+	    				return done(err);
+	    			if(user)
+	    				return done(null, user);
+	    			else {
+                        
+	    				var newUser = {
+                            facebook: {}
+                        };
+	    				newUser.facebook.id = profile.id;
+	    				newUser.facebook.token = accessToken;
+	    				newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
+	    				newUser.facebook.email = profile.emails[0].value;
+                        newUser.facebook.photo = profile.photos[0].value;
+                       
+	    				 collection.insertOne(newUser.facebook, function(err){
+	    					if(err)
+	    						throw err;
+	    				 	return done(null, newUser.facebook);
+	    				})
+	    			}
+	    		});
+	    	});
+	    }
 
-                    var newUser = {
-                        facebook: {}
-                    };
-                    newUser.facebook.id = profile.id;
-                    newUser.facebook.token = accessToken;
-                    newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-                    newUser.facebook.email = profile.emails[0].value;
-                    newUser.facebook.photo = profile.photos[0].value;
-
-                    collection.insertOne(newUser.facebook, function (err) {
-                        if (err)
-                            throw err;
-                        return done(null, newUser.facebook);
-                    })
-                }
-            });
-        });
-    }
-));
+	));
 //****************FACEBOOK AUTH ENDS HERE */
 
 //***** GOOGLE AUTH START HERE */
-app.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}));
+app.get('/auth/google', passport.authenticate('google', {scope: ['profile','email']}));
 
 app.get('/auth/google/callback',
-    passport.authenticate('google', {failureRedirect: '/login'}),
-    function (req, res) {
-        console.log(JSON.stringify(req.url));
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/dashboard');
+  });
 
-        //  alert('hereee');
-        // Successful authentication, redirect home.
-        res.redirect('/dashboard');
-    });
+ passport.use(new GoogleStrategy({
+	    clientID: configAuth.googleAuth.clientID,
+	    clientSecret: configAuth.googleAuth.clientSecret,
+	    callbackURL: configAuth.googleAuth.callbackURL,
+        profileFields: ['id', 'photos', 'emails','name']
 
-passport.use(new GoogleStrategy({
-        clientID: configAuth.googleAuth.clientID,
-        clientSecret: configAuth.googleAuth.clientSecret,
-        callbackURL: configAuth.googleAuth.callbackURL,
-        profileFields: ['id', 'photos', 'emails', 'name']
+	  },
+	  function(accessToken, refreshToken, profile, done) {
+	    	process.nextTick(function(){
+                 var collection = dbCOnnectionObj.collection('users');
+	    		collection.findOne({'id': profile.id}, function(err, user){
+	    			if(err)
+	    				return done(err);
+	    			if(user)
+	    				return done(null, user);
+	    			else {
+                        
+	    				var newUser = {
+                            google: {}
+                        };
+	    				newUser.google.id = profile.id;
+	    				newUser.google.token = accessToken;
+	    				newUser.google.name = profile.displayName;
+	    				newUser.google.email = profile.emails[0].value;
+                        newUser.google.photo = profile.photos[0].value;
+                       
+	    				 collection.insertOne(newUser.google, function(err){
+	    					if(err)
+	    						throw err;
+	    				 	return done(null, newUser.google);
+	    				})
+	    			}
+	    		});
+	    	});
+	    }
 
-    },
-    function (accessToken, refreshToken, profile, done) {
-        process.nextTick(function () {
-            var collection = dbCOnnectionObj.collection('users');
-            collection.findOne({'id': profile.id}, function (err, user) {
-                if (err)
-                    return done(err);
-                if (user)
-                    return done(null, user);
-                else {
+	));
+  //*********GOOGLE AUTH END HERE */
 
-                    var newUser = {
-                        google: {}
-                    };
-                    newUser.google.id = profile.id;
-                    newUser.google.token = accessToken;
-                    newUser.google.name = profile.displayName;
-                    newUser.google.email = profile.emails[0].value;
-                    newUser.google.photo = profile.photos[0].value;
 
-                    collection.insertOne(newUser.google, function (err) {
-                        if (err)
-                            throw err;
-                        return done(null, google);
-                    })
-                }
-            });
-        });
-    }
-));
-//*********GOOGLE AUTH END HERE */
+
 
 
 // app.listen('8001', 'localhost');
 // console.log('Server started at 8001');
-
 
 
 server.listen(port, function() {
