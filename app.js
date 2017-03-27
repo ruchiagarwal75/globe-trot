@@ -175,11 +175,16 @@ app.post('/createGroup', function(req,res){
 });
 
  app.get('/messages', function(req, res){
+        if(!req.session.passport) {
+            console.log("session doesnt exist");
+            res.end();
+            return;
+        }
         var user = req.session.passport.user.email;
        var collection = dbCOnnectionObj.collection('messages');
        console.log(user);
        var chats = [];
-       collection.find( {$or : [{senderEmail:'mazgagan@gmail.com'}, {receiverEmail:'mazgagan@gmail.com'}]},function (err, responseData) {
+       collection.find( {$or : [{senderEmail:user}, {receiverEmail:user}]},function (err, responseData) {
             responseData.each(function(err, item){
                 if(item) {
                     chats.push(item);
@@ -192,55 +197,36 @@ app.post('/createGroup', function(req,res){
     },1000);
      
  });
-app.get('/contact', function(req,res){
-    var receiverName = req.query.receiverName;
-    var receiverEmail = req.query.receiverEmail;
-    var senderName = req.session.passport.user.name;
-    var senderEmail = req.session.passport.user.email;
-    var collection = dbCOnnectionObj.collection('messages');
-    var trips;
-    var chats;
-    var chatid = getChatId(senderName, receiverName);
-     collection.findOne({chatid: chatid},function (err, responseData) {
-         if(responseData){
-             console.log('here');
-             
-              trips = responseData;
-              chats = responseData.message;
-              console.log(chats);
-              res.render('contact', {messages: chats});
-         }
-         else {
-             chats = [];
-             res.render('contact', {messages: chats});
-         }
-       
-     });
-   // res.sendFile(__dirname + '/contact.html');
- 
-   
-
-    io.sockets.on('connection', function(socket) {
-    connections.push(socket);
+ var chatroom;
+  io.sockets.on('connection', function(socket) {
+    connections.push(socket); 
+    console.log("chatroom = "+chatroom);  
+    socket.join(chatroom); 
     console.log('connected %s sockets', connections.length);
-
+    
     socket.on('disconnect', function(){
         connections.splice(connections.indexOf(socket), 1);
-        req.session.reset();
         console.log('Disconnected %s sockets connected', connections.length);
     });
+    
     socket.on('send message', function(data) {
         var msg = [];
-        msg.push(senderName+" : "+data);
+        var collection = dbCOnnectionObj.collection('messages');
+        var trips = data.trips;
+        var chatid = data.chatid;
+        var senderName = data.senderName;
+        msg.push(senderName+" : "+data.msg);
         var message = {
           chatid: chatid,  
           message: msg,
           senderName: senderName,
-          senderEmail: senderEmail,
-          receiverName: receiverName,
-          receiverEmail: receiverEmail
+          senderEmail: data.senderEmail,
+          receiverName: data.receiverName,
+          receiverEmail: data.receiverEmail
         }
-        io.sockets.emit('new message', {msg:data, user:senderName});
+        console.log("sender name = "+ data.trips);
+
+        io.sockets.to(chatid).emit('new message', {msg:data.msg, user:data.senderName});
         
             
              if(!trips) {
@@ -251,7 +237,7 @@ app.get('/contact', function(req,res){
                 trips=true;
              }
              else if(trips){
-                  var chat = senderName+" : "+data;
+                  var chat = senderName+" : "+data.msg;
                   collection.update({chatid:chatid},{$addToSet:{message: chat}}, function(err){
                    if(!err) {
                        console.log('saved new message');
@@ -262,7 +248,32 @@ app.get('/contact', function(req,res){
                 });
              }
     });
-});
+  });
+  
+app.get('/contact', function(req,res){
+    console.log("contact");
+    var msg = {};
+     msg.receiverName = req.query.receiverName;
+     msg.receiverEmail = req.query.receiverEmail;
+     msg.senderName = req.session.passport.user.name;
+     msg.senderEmail = req.session.passport.user.email;
+    var collection = dbCOnnectionObj.collection('messages');
+    var chats;
+    
+    var chatid = getChatId(msg.senderName, msg.receiverName);
+    chatroom = chatid;
+     collection.findOne({chatid: chatid},function (err, responseData) {
+         if(responseData){
+              msg.trips = responseData;
+              chats = responseData.message;
+         }
+         else {
+             chats = [];
+         }
+         console.log(sessions[chatid]);
+       res.render('contact', {messages: chats, chatid: chatid, msg:msg});
+     });
+   // res.sendFile(__dirname + '/contact.html');
 
 });
  
@@ -278,7 +289,11 @@ return str.split('').sort(function (strA, strB) {
 
 
 
-
+app.get('/socket', function(req, res){
+    console.log("req mase successfully");
+    console.log(sessions[req.query.chatid]);
+    res.send(sessions[req.query.chatid]);
+});
 
 
 
