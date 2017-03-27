@@ -33,24 +33,6 @@ MongoClient.connect("mongodb://admin:password@ds145359.mlab.com:45359/globe_trot
     }
 });
 
-
-app.post('/register', function (req,res){
-    var userDetails = req.body;
-    var newUser = {
-        email: userDetails.email,
-        name: userDetails.first_name +" "+ userDetails.last_name,
-        password: userDetails.password
-    };
-     var collection = dbCOnnectionObj.collection('users');
-     collection.insertOne(newUser, function(err, item) {
-        if (err) {
-            return err;
-        }
-        res.redirect('/');
-   });
-});
-
-
 //adding static files
 app.use('/static', express.static('static'));
 
@@ -83,6 +65,37 @@ app.get('/login', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
+app.post('/login', function (req, res) {
+    
+    var collection = dbCOnnectionObj.collection('users');
+    collection.findOne({email: req.body.email}, function (err, item) {
+        if (item) {
+            req.session.passport = {};
+            req.session.passport.user = item;
+            res.redirect('/dashboard');
+        }
+        else {
+            console.log('Wrong Credentials');
+            res.redirect('/login');
+        }
+    });
+});
+
+app.post('/register', function (req,res){
+    var userDetails = req.body;
+    var newUser = {
+        email: userDetails.email,
+        name: userDetails.first_name +" "+ userDetails.last_name,
+        password: userDetails.password 
+    };
+     var collection = dbCOnnectionObj.collection('users');
+     collection.insertOne(newUser, function(err, item) {
+        if (err) {
+            return err;
+        }
+        res.redirect('/');
+   });
+});
 
 app.get('/profile', function (req, res) {
     var udata = {};
@@ -127,21 +140,6 @@ app.post('/profile', function (req, res) {
     );
 });
 
-app.post('/login', function (req, res) {
-    
-    var collection = dbCOnnectionObj.collection('users');
-    collection.findOne({email: req.body.email}, function (err, item) {
-        if (item) {
-            req.session.passport = {};
-            req.session.passport.user = item;
-            res.redirect('/dashboard');
-        }
-        else {
-            console.log('Wrong Credentials');
-            res.redirect('/login');
-        }
-    });
-});
 
 app.post('/addtrip', function (req, res) {
     console.log(req.body.photo);
