@@ -184,6 +184,7 @@ app.post('/createGroup', function(req,res){
        var collection = dbCOnnectionObj.collection('messages');
        console.log(user);
        var chats = [];
+       var senders= [];
        collection.find( {$or : [{senderEmail:user}, {receiverEmail:user}]},function (err, responseData) {
             responseData.each(function(err, item){
                 if(item) {
@@ -191,16 +192,25 @@ app.post('/createGroup', function(req,res){
                 }
             });
        });
+       
         setTimeout(function(){
-        res.render('messages', {chats: chats});  
+        for(var i =0; i<chats.length; i++){
+            var chat = chats[i];
+            if(chat.senderEmail == user){
+                senders.push({name: chat.receiverName, email: chat.receiverEmail});
+            }
+            else {
+                senders.push({name: chat.senderName, email: chat.senderEmail});
+            }
+        }
+        res.render('messages', {chats: senders});  
       //  res.end(); 
     },1000);
      
  });
  var chatroom;
   io.sockets.on('connection', function(socket) {
-    connections.push(socket); 
-    console.log("chatroom = "+chatroom);  
+    connections.push(socket);  
     socket.join(chatroom); 
     console.log('connected %s sockets', connections.length);
     
@@ -224,7 +234,6 @@ app.post('/createGroup', function(req,res){
           receiverName: data.receiverName,
           receiverEmail: data.receiverEmail
         }
-        console.log("sender name = "+ data.trips);
 
         io.sockets.to(chatid).emit('new message', {msg:data.msg, user:data.senderName});
         
@@ -262,15 +271,17 @@ app.get('/contact', function(req,res){
     
     var chatid = getChatId(msg.senderName, msg.receiverName);
     chatroom = chatid;
+    console.log(chatid+"***");
      collection.findOne({chatid: chatid},function (err, responseData) {
          if(responseData){
+             console.log(">>>"+responseData);
               msg.trips = responseData;
               chats = responseData.message;
          }
          else {
              chats = [];
          }
-         console.log(sessions[chatid]);
+         console.log(chats);
        res.render('contact', {messages: chats, chatid: chatid, msg:msg});
      });
    // res.sendFile(__dirname + '/contact.html');
@@ -280,7 +291,7 @@ app.get('/contact', function(req,res){
 
 function getChatId(str1, str2) {
 var str = str1+str2;
-return str.split('').sort(function (strA, strB) {
+return str.toLowerCase().split('').sort(function (strA, strB) {
     return strA.toLowerCase().localeCompare(strB.toLowerCase());
 }
 ).join('')
