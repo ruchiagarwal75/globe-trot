@@ -2,6 +2,9 @@ var express = require('express');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var cookie = require('cookie');
+
 var sessions= require('client-sessions');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
@@ -12,6 +15,7 @@ var configAuth = require('./config/auth');
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cookieParser());
 var connections = [];
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var dbCOnnectionObj;
@@ -67,11 +71,12 @@ app.use(sessions(
 
 app.get('/', function (req, res) {
     if (req.session) {
-        req.session.reset();
+        // req.session.reset();
     }
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/login', function (req, res) {
+
     if (req.session) {
         req.session.reset();
     }
@@ -123,6 +128,7 @@ app.post('/profile', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
+    
     var collection = dbCOnnectionObj.collection('users');
     collection.findOne({email: req.body.email}, function (err, item) {
         if (item) {
@@ -140,11 +146,12 @@ app.post('/login', function (req, res) {
 app.post('/addtrip', function (req, res) {
     console.log(req.body.photo);
     var collection = dbCOnnectionObj.collection('trips');
-    var userUniqueID = req.session.user._id;
-    var name = req.session.user.UserName;
+    var userUniqueID = req.session.passport.user._id;
+    var name = req.session.passport.user.UserName;
     var photo = req.session.user.photo;
     collection.insertOne({
-            userID: userUniqueID, UserName: name, avtar:photo, email: req.body.email, origin: req.body.origin,
+            userID: userUniqueID, UserName: name, avtar:photo,
+            email: req.body.email, origin: req.body.origin,
             destination: req.body.destination, ddate: req.body.ddate, airline: req.body.airline,
             ticketbooked: req.body.ticketbooked, phone: req.body.phone, msg: req.body.msg,reward: req.body.reward
         },
@@ -317,10 +324,6 @@ return str.split('').sort(function (strA, strB) {
 }
 ).join('')
 }
-
-
-
-
 
 //*********** FACEBOOK AUTHENTICATION START HERE */
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
