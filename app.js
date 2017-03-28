@@ -169,9 +169,9 @@ app.post('/addtrip', function (req, res) {
     var collection = dbCOnnectionObj.collection('trips');
     var userUniqueID = req.session.passport.user._id;
     var name = req.session.passport.user.UserName;
-    var photo = req.session.user.photo;
+   // var photo = req.session.user.photo;
     collection.insertOne({
-            userID: userUniqueID, UserName: name, avtar:photo,
+            userID: userUniqueID, UserName: name, 
             email: req.body.email, origin: req.body.origin,
             destination: req.body.destination, ddate: req.body.ddate, airline: req.body.airline,
             ticketbooked: req.body.ticketbooked, phone: req.body.phone, msg: req.body.msg,reward: req.body.reward
