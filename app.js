@@ -53,14 +53,14 @@ app.use(sessions(
 
 app.get('/', function (req, res) {
     if (req.session) {
-        // req.session.reset();
+         req.session.reset();
     }
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/login', function (req, res) {
 
     if (req.session) {
-        //req.session.reset();
+        req.session.reset();
     }
     res.sendFile(__dirname + '/index.html');
 });
@@ -97,15 +97,24 @@ app.post('/register', function (req,res){
    });
 });
 
-app.get('/profile', function (req, res) {
+app.get('/profile', function (req, res) {   
     var udata = {};
     var collection = dbCOnnectionObj.collection('users');
-    var emailAdress = (req.session.user && req.session.user.email) || req.session.passport.user.email;
-       collection.findOne({email: emailAdress}, function (err, item) {
-		    if (item) {
+   // var emailAdress = (req.session.user && req.session.user.email) || req.session.passport.user.email;
+   var userId = "58afab46e634ce31a98bb014";
+   var ObjectID=require('mongodb').ObjectID;
+   var o_id = new ObjectID(userId);
+        collection.findOne({_id:o_id}, function (err, item) {
+		    if (item) {     
             udata.fname	=item.FName;
             udata.lname	=item.LName	;
             udata.email=item.email;
+            udata.phone=item.phone;
+            udata.address=item.address;
+            udata.interest=item.interest;
+            udata.references=item.references;
+            udata.rating=item.rating;
+            udata.age=item.age;
         }
         else {
             console.log('User Not found');
@@ -117,29 +126,43 @@ app.get('/profile', function (req, res) {
     }, 1000);
 });
 
-app.post('/profile', function (req, res) {
+app.post('/profile', function (req, res) {    
     var collection = dbCOnnectionObj.collection('users');
-     var userUniqueID = req.session.user.id;
-    var name = req.session.user.UserName;
-    var email1 = (req.session.user && req.session.user.email) || req.session.passport.user.email;
-    var fname = req.body.first_name;
-    var lname = req.body.last_name;
+      var ObjectID=require('mongodb').ObjectID;
+var userData = {};
+    if( req.body.first_name !=null)
+userData["FName"]= req.body.first_name;
+    if( req.body.last_name !=null)
+userData["LName"]= req.body.last_name;
+    if( req.body.phone !=null)
+userData["phone"]= req.body.phone;
+    if( req.body.age !=null)
+userData["age"]= req.body.age;
+    if( req.body.address !=null)
+userData["address"]= req.body.address;
+    if( req.body.interest !=null)
+userData["interest"]= req.body.interest;
+    if( req.body.references !=null)
+userData["references"]= req.body.references;
+    if( req.body.rating !=null)
+userData["rating"]= req.body.rating;       
+    var userId = "58afab46e634ce31a98bb014";
+    var o_id = new ObjectID(userId);
+    var obj
     collection.update(
-                {id: userUniqueID}
-                ,{$set: { FName: fname}}
+                {'_id':o_id},
+                {$set: userData}
                 ,function (err, item)
                 {
-
                         if (err) {
                             console.log('Bad req');
                         }
                         else {
-                            res.redirect('/profile');
+                            res.redirect('/dashboard');
                         }
                 }
     );
 });
-
 
 app.post('/addtrip', function (req, res) {
     console.log(req.body.photo);

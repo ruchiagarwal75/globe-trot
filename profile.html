@@ -1,64 +1,50 @@
 <!DOCTYPE html>
-<html >
+<html>
+
 <head>
   <meta charset="UTF-8">
   <link href='static/css/fonts.css' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
   <link rel="stylesheet" href="static/css/style.css">
-
 </head>
-
-<body >
+<body>
   <div class="form">
-
-
-
-
-        <div >
-          <h1>Update Profile</h1>
-
-          <form action="/profile" method="post">
-
-          <div class="top-row">
-            <div class="field-wrap">
-              <label>
-                First Name<span class="req">*</span>
-              </label>
-              <input type="text" name="first_name" required  />
-            </div>
-
-            <div class="field-wrap">
-              <label>
-                Last Name<span class="req">*</span>
-              </label>
-              <input type="text" name="last_name" />
-            </div>
-          </div>
-
+    <div>
+      <h1>Update Profile</h1>
+      <form action="/profile" method="post">
+        <div class="top-row">
           <div class="field-wrap">
             <label>
+                First Name<span class="req">*</span>
+              </label>
+            <input type="text" name="first_name"  required />
+          </div>
+          <div class="field-wrap">
+            <label>
+                Last Name<span class="req">*</span>
+              </label>
+            <input type="text"  name="last_name" />
+          </div>
+        </div>
+        <div class="field-wrap">
+          <label>
               Email Address<span class="req">*</span>
             </label>
-            <input type="email" name="email" required />
-          </div>
-
-          <!-- <div class="field-wrap">
+          <input type="email" name="email" required  />
+        </div>
+         <div class="field-wrap">
             <label>
               Phone Number
             </label>
             <input type="tel" name="phone"  pattern="^(\+[0-9]{1,5})?([1-9][0-9]{9})$" />
           </div>
-
           <div class="field-wrap">
             <label>
               Address
             </label>
-            <textarea name="address"></textarea>
+            <textarea name="address" />
           </div>
-
-          <div class="top-row">
-
-
+       
             <div class="field-wrap">
               <label>
                 Age
@@ -66,27 +52,14 @@
               <input type="number" size="6" name="age" min="18" max="99" ><br>
 
             </div>
-          </div>
-
-
-
-
-
-
-          <div class="field-wrap">
-            <label>
-              /..................Dummy To be deleted......../
-            </label>
-            <textarea name="dummy"></textarea>
-          </div>
-
+         
+        
           <div class="field-wrap">
             <label>
               Interest
             </label>
             <textarea name="interest"></textarea>
           </div>
-
           <div class="field-wrap">
             <label>
               References
@@ -98,59 +71,15 @@
               Rating
             </label>
             <textarea name="rating"></textarea>
-          </div> -->
-
-
-
-          <button type="submit" id="register" onclick="dateValidate()" disabled="disabled" class="btn btn-default" data-toggle="modal"
-                                        data-target="#myModal">Submit
+          </div> 
+           <div class="field-wrap">
+        <button type="submit" id="register" onclick="dateValidate()" disabled="disabled" class="btn btn-default" data-toggle="modal"
+          data-target="#myModal">Submit
                                 </button>
-
-          </form>
-
-        </div>
- <div class="row">
-
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Modal Header</h4>
-                    </div>
-                    <div class="modal-body">
-                        <h2>Congratulations! Your Profile has been updated.</h2>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+                                 <div class="field-wrap">
+      </form>
     </div>
 
-
-</div> <!-- /form -->
-  <script src='static/js/jquery.min.js'></script>
-
-    <script src="static/js/index.js"></script>
-
-
-            <h2>With Default Selection</h2>
-
-            <div class="acidjs-rating-stars">
-                <form>
-                    <input type="radio" name="group-2" id="group-2-0" value="5" /><label for="group-2-0"></label>
-                    <input type="radio" name="group-2" id="group-2-1" value="4" /><label for="group-2-1"></label>
-                    <input type="radio" checked="checked" name="group-2" id="group-2-2" value="3" /><label for="group-2-2"></label>
-                    <input type="radio" name="group-2" id="group-2-3" value="2" /><label for="group-2-3"></label>
-                    <input type="radio" name="group-2" id="group-2-4"  value="1" /><label for="group-2-4"></label>
-                </form>
-            </div>
-
 </body>
+
 </html>
