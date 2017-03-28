@@ -23,9 +23,12 @@
     "passport-facebook": "^2.1.1",
     "passport-google-oauth": "^1.0.0",
     "serve-favicon": "^2.4.1",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "cookie": "^0.3.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "cookie": "^0.3.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
