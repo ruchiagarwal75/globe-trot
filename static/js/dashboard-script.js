@@ -43,7 +43,7 @@ $(function() {
                 };
                 apca.onError = function (data) {
                     response();
-                    console.log(data.message);
+                    //console.log(data.message);
                 };
             },
             select: function( event, ui ) {
