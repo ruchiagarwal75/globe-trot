@@ -1,23 +1,4 @@
 
-$(document).ready(function() {
-
-   function allFilled() {
-        var filled = true;
-        $('body input').each(function() {
-            if($(this).val() == '')  {
-          
-        } else {
-          label.addClass('active highlight');
-        }
-        });
-        return filled;
-    }
-    
-
-});
-
-
-
 $('.form').find('input, textarea').on('keyup blur focus', function (e) {
 
   var $this = $(this),
