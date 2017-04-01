@@ -210,9 +210,13 @@ app.get('/dashboard', function (req, res) {
 
 app.post('/trips', function (req, res) {
     var searchBy = req.body;
+    var today = new Date();
     var dataTrips = [];
     var collection = dbCOnnectionObj.collection('trips');
-    collection.find({origin: searchBy.term[0], destination: searchBy.term[1]}, function (err, trips) {
+
+    collection.find({origin: searchBy.term[0], destination:
+searchBy.term[1],ddate : {$gte: today.toISOString().substring(0, 10)}}
+    , function (err, trips) {
         trips.each(function (err, item) {
             if (item)
                 dataTrips.push(item);
@@ -230,8 +234,8 @@ app.get('/fire', function (req, res) {
 app.get('/mytrips', function (req, res) {
     var userTrips = [];
     var collection = dbCOnnectionObj.collection('trips');
-    var email = (req.session.user && req.session.user.email) || (req.session.passport && req.session.passport.user.email) || 'nouser';
-    collection.find({user: email}, function (err, trips) {
+    var email1 = (req.session.user && req.session.user.email) || (req.session.passport && req.session.passport.user.email) || 'nouser';
+    collection.find({email: email1}, function (err, trips) {
         trips.each(function (err, item) {
             if (item)
                 userTrips.push(item);

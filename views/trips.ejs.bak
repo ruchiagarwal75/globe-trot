@@ -14,11 +14,9 @@
 
 <div role="main" class="pagecontent">
     <nav>
-        <a class="nav" href="/">Logout</a>
-        <a class="nav" href="/profile">Profile</a>
-		<a class="nav" href="/dashboard">Dashboard</a>        
-        
-        
+		<a class="nav" href="/dashboard">dashboard</a>
+        <a class="nav" href="/">logout</a>
+        <a class="nav" href="/profile">profile</a>
     </nav>
     <div class="container" style="margin-top: 50px;">
         <div class="row">
@@ -63,7 +61,7 @@
                                  data-toggle="modal"
                                 data-target="#myModal1">Submit
                         </button> </div> -->
-                        
+                        <div class="row3">Details</div>
                       <div class="row3"><a href="/contact?receiverEmail=<%= user.email %>&receiverName=<%= user.UserName %>">Contact</a></div>
                     </div>
                 </div>
@@ -79,14 +77,8 @@
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                     <h4 class="modal-title">Profile Details</h4>
                                 </div>
-                                <div class="modal-body">                                     
-							<div class="rows1_2">
-                            <h3 class="imgHolder">
-                                <img class="img-thumbnail" src="<%= user.avtar %>" alt="Avtar" height="60" width="100">
-                                
-                            </h3>
-                            <!-- <span class="view">Views <%= user.view %></span>  -->
-                        </div>
+                                <div class="modal-body">
+                                     <h3>Profile Details</h3>
                                     <div>
                                         <label id ="name" name="name">User Name - <%= user.UserName %></label>
                                     </div>
@@ -95,12 +87,6 @@
                                     </div>
                                     <div>
                                       <br/><label id="phone" name ="phone">Phone - <%= user.phone %></label>
-                                    </div>
-                                    <div>
-                                        <br> <label id="age" name="age"> Age - <%=user.age %> </label>
-                                    </div>
-                                    <div>
-                                        <br> <label id="address" name="address"> Address - <%=user.address %> </label>
                                     </div>
 
                                 </div>
@@ -113,7 +99,7 @@
                         </div>        
                 </div>
             </div>
-        </div> 
+        </div>
         </div>
         <% }) %>
     </div>
