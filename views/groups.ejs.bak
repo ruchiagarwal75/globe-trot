@@ -14,10 +14,9 @@
         <div role="main" class="pagecontent">
         <nav>
             <a id="logo" href="/dashboard"><img src="http://www.freeiconspng.com/uploads/--global-globe-plane-travel-worldwide-icon--icon-search-engine-1.png" /></a>
-            <a class="nav" href="/">Logout</a>
-            <a class="nav" href="/profile">Profile</a>
-            <a class="nav" href="/groups">Groups</a>
-			<a class="nav" href="/dashboard">Dashboard</a>
+            <a class="nav" href="/">logout</a>
+            <a class="nav" href="/profile">profile</a>
+            <a class="nav" href="/groups">groups</a>
         </nav>
         <div id="succ" class="hide alert alert-success" style="width:300px"><span id="msgicon" class="glyphicon glyphicon-ok-circle"></span><span style="margin-left: 5px">Group Created</span><a href="#" class="close" data-dismiss="alert">&times</a> </div>
             <section>

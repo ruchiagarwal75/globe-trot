@@ -2,8 +2,8 @@
 $(function() {
     $( '.autocomplete' ).each(function () {
         var apca = new apc('autocomplete', {
-            key : '1e113691bf',
-            secret : '469ee71afc5abde', // Your API Secret Key: use this if you are not connecting from a web server
+            key : '26b32e5d0c',
+            secret : '62a1e0e27eed29e', // Your API Secret Key: use this if you are not connecting from a web server
             limit : 7
         });
 
@@ -43,7 +43,7 @@ $(function() {
                 };
                 apca.onError = function (data) {
                     response();
-                    console.log(data.message);
+                    //console.log(data.message);
                 };
             },
             select: function( event, ui ) {

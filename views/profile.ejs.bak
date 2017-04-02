@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 
@@ -6,8 +7,23 @@
   <link href='static/css/fonts.css' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
   <link rel="stylesheet" href="static/css/style.css">
+
+<link rel="stylesheet" href="static/css/dashboard.css">
+        <link rel="stylesheet" href="static/css/groups.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+
 </head>
-<body>
+<body style="height:1460px">
+<div class="page-wrapper"></div>
+        <div role="main" class="pagecontent">
+        <nav>
+            <a id="logo" href="/dashboard"><img src="http://www.freeiconspng.com/uploads/--global-globe-plane-travel-worldwide-icon--icon-search-engine-1.png" /></a>
+            <a class="nav" href="/">logout</a>
+            <a class="nav" href="/profile">profile</a>
+            <a class="nav" href="/groups">groups</a>
+        </nav>
+
   <div class="form">
     <div>
       <h1>Update Profile</h1>
@@ -17,39 +33,39 @@
             <label>
                 First Name<span class="req">*</span>
               </label>
-            <input type="text" name="first_name"  required />
+            <input type="text" name="first_name" required  value=<%= userDetail.fname %> />
           </div>
           <div class="field-wrap">
             <label>
                 Last Name<span class="req">*</span>
               </label>
-            <input type="text"  name="last_name" />
+            <input type="text" name="last_name"   value=<%= userDetail.lname %> />
           </div>
         </div>
         <div class="field-wrap">
           <label>
               Email Address<span class="req">*</span>
             </label>
-          <input type="email" name="email" readonly  />
+          <input type="email" name="email" required   value=<%= userDetail.email %> />
         </div>
          <div class="field-wrap">
             <label>
               Phone Number
             </label>
-            <input type="tel" name="phone"  pattern="^(\+[0-9]{1,5})?([1-9][0-9]{9})$" />
+            <input type="tel" name="phone"  pattern="^(\+[0-9]{1,5})?([1-9][0-9]{9})$"    value=<%= userDetail.phone %> />
           </div>
           <div class="field-wrap">
             <label>
               Address
             </label>
-            <textarea name="address" />
+            <textarea name="address" ><%= userDetail.address %></textarea>
           </div>
-       
+         
             <div class="field-wrap">
               <label>
                 Age
               </label>
-              <input type="number" size="6" name="age" min="18" max="99" ><br>
+              <input type="number" size="6" name="age" min="18" max="99"  value=<%= userDetail.age %> /><br>
 
             </div>
          
@@ -58,28 +74,27 @@
             <label>
               Interest
             </label>
-            <textarea name="interest"></textarea>
+            <textarea name="interest"  ><%= userDetail.interest %> </textarea>
           </div>
           <div class="field-wrap">
             <label>
               References
             </label>
-            <textarea name="references"></textarea>
+            <textarea name="references" ><%= userDetail.references %> </textarea>
           </div>
           <div class="field-wrap">
             <label>
               Rating
             </label>
-            <textarea name="rating"></textarea>
+            <textarea name="rating"  ><%= userDetail.rating %> </textarea>
           </div> 
            <div class="field-wrap">
-        <button type="submit" id="register" onclick="dateValidate()" disabled="disabled" class="btn btn-default" data-toggle="modal"
-          data-target="#myModal">Submit
-                                </button>
-                                 <div class="field-wrap">
+        <button type="submit" class="btn btn-default">Submit</button>
+                                
       </form>
-    </div>
-
+    
+  </div>
+  </div>
 </body>
 
 </html>

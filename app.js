@@ -101,13 +101,14 @@ app.get('/profile', function (req, res) {
     var udata = {};
     var collection = dbCOnnectionObj.collection('users');
    // var emailAdress = (req.session.user && req.session.user.email) || req.session.passport.user.email;
-   var userId = "58afab46e634ce31a98bb014";
+   var userId = req.session.passport.user._id;
    var ObjectID=require('mongodb').ObjectID;
    var o_id = new ObjectID(userId);
         collection.findOne({_id:o_id}, function (err, item) {
 		    if (item) {     
-            udata.fname	=item.FName;
-            udata.lname	=item.LName	;
+            var name =item.name.split(" ");
+            udata.fname	=  name[0];
+            udata.lname	=  name[1];
             udata.email=item.email;
             udata.phone=item.phone;
             udata.address=item.address;
@@ -131,9 +132,7 @@ app.post('/profile', function (req, res) {
       var ObjectID=require('mongodb').ObjectID;
 var userData = {};
     if( req.body.first_name !=null)
-userData["FName"]= req.body.first_name;
-    if( req.body.last_name !=null)
-userData["LName"]= req.body.last_name;
+userData["name"]= req.body.first_name + " " + req.body.last_name;    
     if( req.body.phone !=null)
 userData["phone"]= req.body.phone;
     if( req.body.age !=null)
@@ -146,7 +145,7 @@ userData["interest"]= req.body.interest;
 userData["references"]= req.body.references;
     if( req.body.rating !=null)
 userData["rating"]= req.body.rating;       
-    var userId = "58afab46e634ce31a98bb014";
+    var userId = req.session.passport.user._id;
     var o_id = new ObjectID(userId);
     var obj
     collection.update(
@@ -168,10 +167,10 @@ app.post('/addtrip', function (req, res) {
     console.log(req.body.photo);
     var collection = dbCOnnectionObj.collection('trips');
     var userUniqueID = req.session.passport.user._id;
-    var name = req.session.passport.user.UserName;
-   // var photo = req.session.user.photo;
+    var name = req.session.passport.user.name;
+    var photo = req.session.passport.user.photo;
     collection.insertOne({
-            userID: userUniqueID, UserName: name, 
+            userID: userUniqueID, UserName: name, avtar :photo,
             email: req.body.email, origin: req.body.origin,
             destination: req.body.destination, ddate: req.body.ddate, airline: req.body.airline,
             ticketbooked: req.body.ticketbooked, phone: req.body.phone, msg: req.body.msg,reward: req.body.reward
@@ -211,9 +210,13 @@ app.get('/dashboard', function (req, res) {
 
 app.post('/trips', function (req, res) {
     var searchBy = req.body;
+    var today = new Date();
     var dataTrips = [];
     var collection = dbCOnnectionObj.collection('trips');
-    collection.find({origin: searchBy.term[0], destination: searchBy.term[1]}, function (err, trips) {
+
+    collection.find({origin: searchBy.term[0], destination:
+searchBy.term[1],ddate : {$gte: today.toISOString().substring(0, 10)}}
+    , function (err, trips) {
         trips.each(function (err, item) {
             if (item)
                 dataTrips.push(item);
@@ -231,8 +234,8 @@ app.get('/fire', function (req, res) {
 app.get('/mytrips', function (req, res) {
     var userTrips = [];
     var collection = dbCOnnectionObj.collection('trips');
-    var email = (req.session.user && req.session.user.email) || (req.session.passport && req.session.passport.user.email) || 'nouser';
-    collection.find({user: email}, function (err, trips) {
+    var email1 = (req.session.user && req.session.user.email) || (req.session.passport && req.session.passport.user.email) || 'nouser';
+    collection.find({email: email1}, function (err, trips) {
         trips.each(function (err, item) {
             if (item)
                 userTrips.push(item);
