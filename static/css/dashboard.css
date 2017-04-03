@@ -9,6 +9,19 @@ body {
     text-align: center;
 
 }
+
+.dashboardcontent {
+  
+    background-image: url("http://caitflanders.com/wp-content/uploads/2016/05/intentional-lifestyle-bag.jpg");
+    margin-top:50px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+   
+    text-align: center;
+
+}
+
 .addtrip {
    background-image: url("https://images.pexels.com/photos/34020/pexels-photo.jpg?w=940&h=650&auto=compress&cs=tinysrgb");
     background-attachment: fixed;
@@ -139,22 +152,29 @@ section {
 .mytrips_wrapper .pagecontent {
     top: 25px;
 }
-.upcomingtrips  {
+
+
+.ul-upcomingtrips  {
    display: block;
+   width: 80%;
+
 }
-.upcomingtrips li {
+.li-upcomingtrips {
     display: block;
     margin: auto;
     margin-bottom: 30px;
     list-style-type: none;
-    width: 60%;
     height: 100px;
+    width: 80%;
     color: white;
     font-size: 20px;
     background: rgba(19, 35, 47, 0.9);
     border-radius: 4px;
     box-shadow: 0 4px 10px 4px;
+    text-align: center;
 }
+
+
 .mytrips_wrapper header h1 {
     color: white
 }
@@ -292,17 +312,25 @@ section {
     height: 75px;
     color: blue;
 }
+
+
 li{
-    background-color: #ccc;
+    /*background-color: #ccc;
+    color: white;*/
+
+    background: rgba(19, 35, 47, 0.9);
+    color: #1ab188;
     width: 250px;
     height: auto;
     font-size: 25px;
-    color: white;
 }
 ul
 {
     list-style-type: none;
+    
+    width: 200px;
 }
+
 .ui-helper-hidden-accessible{
   display: none !important;
 }
@@ -342,3 +370,5 @@ label {
 
   font-size: 22px;
 }
+
+

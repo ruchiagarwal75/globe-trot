@@ -27,50 +27,52 @@
         </div>
     </div>
     <div class="flex-container">
-        <% tripsData.forEach(function(user) { %>
+        <% tripsData.forEach(function(trip) { %>
         <div class="flex-item" style="background-color: #defdff;">
             <div class="innerContainer">
                 <div class="innerDivs">
                     <div class="flex-container dottetBorder">
                         <div class="rows1_2">
                             <h3 class="imgHolder">
-                                <img class="img-thumbnail" src="<%= user.avtar %>" alt="Avtar" height="60" width="60">
-                                <!-- <a href="tripDetails"><%= user.UserName %></a> -->
-                                <span class="details"><%= user.UserName %>  </span>
+                                <img class="img-thumbnail" src="<%= trip.avtar %>" alt="Avtar" height="60" width="60">
+                                <!-- <a href="tripDetails"><%= trip.UserName %></a> -->
+                                <span class="details"><%= trip.UserName %> </span>
                             </h3>
-                            <!-- <span class="view">Views <%= user.view %></span>  -->
+                            <!-- <span class="view">Views <%= trip.view %></span>  -->
                         </div>
-                        <div class="rows1_2 type"><%= user.type %></div>
+                        <div class="rows1_2 type"><%= trip.type %></div>
                     </div>
                 </div>
                 <div class="innerDivs">
                     <div class="flex-container"  style="border-bottom: thin dotted black;">
                         <div class="rows1_2">
-                            <span class="details"><%= user.origin %> - </span>
-                            <span class="details"><%= user.destination %></span><br>
-                            <span class="details">Departure Date: <%= user.ddate %></span><br>
-                            <span class="details"><%= user.status %></span>
-                            <span class="details">Ticket Booked : <%= user.ticketbooked%></span>
+                            <span class="details"><%= trip.origin %> - </span>
+                            <span class="details"><%= trip.destination %></span><br>
+                            <span class="details">Departure Date: <%= trip.ddate %></span><br>
+                            <span class="details"><%= trip.status %></span>
+                            <span class="details">Ticket Booked : <%= trip.ticketbooked%></span>
                         </div>
-                        <div class="rows1_2 airline">Airline :<%= user.airline %></div>
+                        <div class="rows1_2 airline">Airline :<%= trip.airline %></div>
+
+
 
                     </div>
                 </div>
                 <div class="innerDivs">
-                    <div class="flex-container">
-                        <a href="#"  data-toggle="modal"  data-target="#myModal1" class="row3"><span class="glyphicon glyphicon-user"></span> Profile </a>
+                    <div class="flex-container"> 
+                        <a href="#"  data-toggle="modal"  data-target="#<%= trip.userID %> " class="row3"><span class="glyphicon glyphicon-user"></span> Profile </a>
                       <!-- <div>  <button class="btn btn-primary btn-lg" type="button" id="register"
                                  data-toggle="modal"
                                 data-target="#myModal1">Submit
                         </button> </div> -->
                         
-                      <div class="row3"><a href="/contact?receiverEmail=<%= user.email %>&receiverName=<%= user.UserName %>">Contact</a></div>
+                      <div class="row3"><a href="/contact?receiverEmail=<%= trip.email %>&receiverName=<%= trip.UserName %>">Contact</a></div>
                     </div>
                 </div>
                 <div class="row">
 
                     <!-- Modal -->
-                    <div id="myModal1" class="modal fade" role="dialog" align-content="center">
+                    <div id="<%= trip.userID %>" class="modal fade" role="dialog" align-content="center">
                         <div class="modal-dialog">
 
                             <!-- Modal content-->
@@ -82,19 +84,19 @@
                                 <div class="modal-body">                                     
 							<div class="rows1_2">
                             <h3 class="imgHolder">
-                                <img class="img-thumbnail" src="<%= user.avtar %>" alt="Avtar" height="60" width="100">
+                                <img class="img-thumbnail" src="<%= trip.avtar %>" alt="Avtar" height="60" width="100">
                                 
                             </h3>
-                            <!-- <span class="view">Views <%= user.view %></span>  -->
+                            <!-- <span class="view">Views <%= trip.view %></span>  -->
                         </div>
                                     <div>
-                                        <label id ="name" name="name">User Name - <%= user.UserName %></label>
+                                        <label id ="name" name="name">User Name - <%= trip.UserName %></label>
                                     </div>
                                     <div>
-                                       <br/><label id="email" name ="email">Email - <%= user.email %></label>
+                                       <br/><label id="email" name ="email">Email - <%= trip.email %></label>
                                     </div>
                                     <div>
-                                      <br/><label id="phone" name ="phone">Phone - <%= user.phone %></label>
+                                      <br/><label id="phone" name ="phone">Phone - <%= trip.phone %></label>
                                     </div>
                                    
 
