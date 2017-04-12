@@ -2,8 +2,8 @@
 $(function() {
     $( '.autocomplete' ).each(function () {
         var apca = new apc('autocomplete', {
-            key : '26b32e5d0c',
-            secret : '62a1e0e27eed29e', // Your API Secret Key: use this if you are not connecting from a web server
+            key : 'ceea79d6e4',
+            secret : '3c095cb15cdc1f8', // Your API Secret Key: use this if you are not connecting from a web server
             limit : 7
         });
 
